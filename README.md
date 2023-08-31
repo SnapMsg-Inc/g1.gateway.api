@@ -1,6 +1,6 @@
 ## REST specification
 
-All methods require of a header `Authorization: {idtoken}` to authenticate.
+All methods require an `Authorization: {idtoken}` header to authenticate.
 This idtoken contains the user info embedded.
 
 ### users resource
