@@ -2,8 +2,10 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "SnapMsg API"}
+async def not_impl():
+	return {msg: "Not yet implemented"} 
+
+app.get("/users")(not_impl)
+app.post("/users")(not_impl)
 
 
