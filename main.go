@@ -12,6 +12,7 @@ import (
 	docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
 )
 
+
 // @title SnapMsg API
 // @version 1.0
 // @securityDefinitions.apikey Bearer
@@ -48,7 +49,6 @@ func main() {
 	router.DELETE("/posts/fav/:pid", posts.Unfav)
 
 	/* messaging routes */
-
 	/* admin routes */
 	//router.PUT("/admin/users/:uid", admin.Create)
 	//router.DELETE("/admin/users/:uid", admin.DeleteAnyUser)

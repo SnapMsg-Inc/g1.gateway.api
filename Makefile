@@ -1,13 +1,13 @@
+PORT=3000
 
-.PHONY: down clean
+.PHONY: build clean
 
-run: 
-	docker compose up -d
+build:
+	docker build -t api-gateway .
 
-rebuild:
-	docker compose build
+run: clean build 
+	docker run --name api-gateway -p ${PORT}:${PORT} -d api-gateway:latest 
 
 clean: 
-	docker compose down
-	docker image rm -f api-gateway
 	docker container rm -f api-gateway
+	docker image rm -f api-gateway

@@ -52,7 +52,6 @@ func GetRecommended(c *gin.Context) {
 // @Produce json
 // @Success 200 
 // @Router /users [post]
-// @Security Bearer
 func Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
 }
