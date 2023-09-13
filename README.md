@@ -49,7 +49,7 @@ This idtoken contains the user info embedded.
 ### admin methods 
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:--------:|:-------:|-------------|:--------:|
-| **create admin** | PUT **`/admin/users/{id}`**  | **-** | **-** | Designate an existing user as admin | **-** |
-| **delete** | DELETE **`/admin/users/{id}`** | **-** | **-** | Delete a given user account | **-** |
+| **create admin** | PATCH **`/admin/users/{id}`**  | **-** | **-** | Designate an existing user as admin | **-** |
+| **delete** | DELETE **`/admin/users/{id}`** | **-** | **-** | Delete any user account | **-** |
 | **delete** | DELETE **`/admin/posts/{id}`** | **-** | **-** | Deletes any post | **-** |
 
