@@ -1,3 +1,17 @@
+## Usage
+Build:
+```bash
+  make build
+```
+Run:
+```bash
+  make run [PORT=<PORT>]
+```
+Remove image and container:
+```bash
+  make clean
+```
+
 ## REST specification
 
 All methods require an `Authorization: Bearer <JWT>` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
