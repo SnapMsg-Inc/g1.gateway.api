@@ -4,7 +4,7 @@
 run: 
 	docker compose up -d
 
-reload:
+rebuild:
 	docker compose build
 
 clean: 
