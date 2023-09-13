@@ -1,39 +1,17 @@
-name: api-gateway
-
-# The build section defines how to build the images of your development environment
-# More info: https://www.okteto.com/docs/reference/manifest/#build
 build:
-
-  # You can use the following env vars to refer to this image in your deploy commands:
-  #  - OKTETO_BUILD_API_GATEWAY_REGISTRY: image registry
-  #  - OKTETO_BUILD_API_GATEWAY_REPOSITORY: image repo
-  #  - OKTETO_BUILD_API_GATEWAY_IMAGE: image name
-  #  - OKTETO_BUILD_API_GATEWAY_SHA: image tag sha256
   api-gateway:
     context: .
     dockerfile: Dockerfile
-    image: api-gateway
 
-# The deploy section defines how to deploy your development environment
-# More info: https://www.okteto.com/docs/reference/manifest/#deploy
+    
 deploy:
-    compose: docker-compose.yml
+  compose:
+    file: docker-compose.yml
 
-# The dependencies section defines other git repositories to be deployed as part of your development environment
-# More info: https://www.okteto.com/docs/reference/manifest/#dependencies
-# dependencies:
-#   - https://github.com/okteto/sample
-# The dev section defines how to activate a development container
-# More info: https://www.okteto.com/docs/reference/manifest/#dev
-# dev:
-#   sample:
-#     image: okteto/dev:latest
-#     command: bash
-#     workdir: /usr/src/app
-#     sync:
-#       - .:/usr/src/app
-#     environment:
-#       - name=$USER
-#     forward:
-#       - 8080:80
+dev:
+  api-gateway:
+    forward:
+      - 3000:3000
+    sync:
+      - .:/usr/snapmsg-gateway
 

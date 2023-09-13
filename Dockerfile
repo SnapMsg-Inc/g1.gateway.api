@@ -1,6 +1,6 @@
 FROM golang:latest
 
-WORKDIR /usr/src
+WORKDIR /usr/snapmsg-gateway
 
 COPY go.mod go.mod 
 
