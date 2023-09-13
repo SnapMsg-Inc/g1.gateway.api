@@ -19,6 +19,9 @@ import (
 // @in header
 // @name Authorization
 // @description Type "Bearer" followed by a space and Firebase JWT.
+// @tag.name users methods
+// @tag.name posts methods
+// @tag.name admin methods
 func main() {
 	router := gin.Default() // router with Default middleware
 	docs.SwaggerInfo.BasePath = "/"

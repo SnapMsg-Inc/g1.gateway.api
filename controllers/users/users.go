@@ -9,14 +9,15 @@ import (
 
 // List users godoc
 // @Summary List users filtering by query 
+// @Schemes
+// @Description
 // @Param uid query string false "user id"
 // @Param email query string false "user email"
 // @Param nick query string false "user nickname"
 // @Param maxresults query int true "max results"
 // @Param page query int true "page number"
-// @Schemes
-// @Description 
 // @Tags users methods 
+// @x-order "1"
 // @Accept */* 
 // @Produce json
 // @Success 200 array models.User
@@ -32,6 +33,7 @@ func Get(c *gin.Context) {
 // @Schemes
 // @Description 
 // @Tags users methods 
+// @x-order "2"
 // @Accept json
 // @Produce json
 // @Success 200 array models.User
@@ -47,6 +49,7 @@ func GetRecommended(c *gin.Context) {
 // @Param userinfo body models.UserInfo true "User info"
 // @Schemes 
 // @Description 
+// @x-order "0"
 // @Tags users methods 
 // @Accept json 
 // @Produce json

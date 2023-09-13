@@ -6,7 +6,9 @@ build:
 	docker build -t api-gateway .
 
 run: clean build 
-	docker run --name api-gateway -p ${PORT}:${PORT} -d api-gateway:latest 
+	docker run --name api-gateway -p ${PORT}:3000 -d api-gateway:latest 
+
+
 
 clean: 
 	docker container rm -f api-gateway
