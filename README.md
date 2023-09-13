@@ -1,6 +1,6 @@
 ## REST specification
 
-All methods require an `Authorization: Bearer {JWT}` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
+All methods require an `Authorization: Bearer <JWT>` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
 
 This idtoken contains the user info embedded.
 
