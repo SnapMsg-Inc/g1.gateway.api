@@ -20,15 +20,15 @@ This idtoken contains the user info embedded.
 
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:-------:|:-------:|-------------|:--------:|
-| **list** | GET **`/posts`** | {hashtags, nick, text, maxresults, page} | **-**  | List visible posts matched by the filter | List of {nick, timestamp, text, mediaURIs, likes} |
-| **list feed** | GET **`/posts/feed`** | {maxresults, page} | **-**  | List the posts of the followed users (feed) | List of {nick, timestamp, text, mediaURIs, likes} |
-| **list recommended** | GET **`/posts/recommended`** | {maxresults, page} | **-**  | List recommended posts for the given user, matched by the filter | List of {nick, timestamp, text, mediaURIs, likes} |
+| **list** | GET **`/posts`** | {hashtags, nick, text, maxresults, page} | **-**  | List visible posts matched by the filter | List of {pid, nick, timestamp, text, mediaURIs, likes} |
+| **list feed** | GET **`/posts/feed`** | {maxresults, page} | **-**  | List the posts of the followed users (feed) | List of {pid, nick, timestamp, text, mediaURIs, likes} |
+| **list recommended** | GET **`/posts/recommended`** | {maxresults, page} | **-**  | List recommended posts for the given user, matched by the filter | List of {pid, nick, timestamp, text, mediaURIs, likes} |
 | **create** | POST **`/posts`** | **-** | {hashtags, text, mediaURLs, ispublic} | Creates a post | **-** |
 | **update** | PUT **`/posts/{id}`** | **-** | {text, hashtags} | Updates own post | **-** |
 | **delete** | DELETE **`/posts/{id}`** | **-** | **-** | Deletes own post | **-** |
 | **like** | POST **`/posts/like/{id}`** | **-** | **-** | Like a post | **-** |
 | **unlike** | DELETE **`/posts/like/{id}`** | **-** | **-** | Unlike a post | **-** |
-| **list favs** | GET **`/posts/fav`** | {maxresults, page} | **-** | Get fav posts | **-** |
+| **list favs** | GET **`/posts/fav`** | {maxresults, page} | **-** | Get fav posts | List of {pid, nick, timestamp, text, mediaURIs, likes} |
 | **fav** | POST **`/posts/fav/{id}`** | **-** | **-** | Mark a post as favorite | **-** |
 | **unfav** | DELETE **`/posts/fav/{id}`** | **-** | **-** | Unfav a post | **-** |
 
