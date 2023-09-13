@@ -8,7 +8,7 @@ This idtoken contains the user info embedded.
 
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:--------:|:-------:|-------------|:--------:|
-| **list** | GET **`/users`** | {id, email, nick, maxresults, page} | **-** | Get user(s) by the given qparams | List of {id, nick, bio, followers, followings} (if no qparams provided, empty list is returned) |
+| **list** | GET **`/users`** | {id, email, nick, maxresults, page} | **-** | Get user(s) by the given qparams | List of {id, nick, bio, followers, followings} |
 | **list recommended** | GET  **`/users/recommended`** | **-** | **-** | Get recomended user(s) for the given user | List of {id, nick, bio, followers, followings} |
 | **create** | POST **`/users`**  | **-** | {email, nick, zone, bio} | Creates a user | **-** |
 | **update** | PUT **`/users`**  | **-** | {nick, bio} | Updates information user | **-** |
