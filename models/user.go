@@ -2,7 +2,6 @@ package models
 
 
 type UserInfo struct {
-	ID string `json:"-" gorm:"primary_key"`
 	Email string `json:"email"`
 	FullName string `json:"fullname"`
 	Nick string `json:"nickname"`
