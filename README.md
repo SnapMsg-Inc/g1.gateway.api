@@ -1,6 +1,6 @@
 ## REST specification
 
-All methods require an `Authorization: idtoken` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
+All methods require an `Authorization: Bearer {JWT}` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
 
 This idtoken contains the user info embedded.
 
@@ -21,8 +21,9 @@ This idtoken contains the user info embedded.
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:-------:|:-------:|-------------|:--------:|
 | **list** | GET **`/posts`** | {hashtags, nick, text, maxresults, page} | **-**  | List visible posts matched by the filter | List of {nick, timestamp, text, mediaURIs, likes} |
+| **list feed** | GET **`/posts/feed`** | {maxresults, page} | **-**  | List the posts of the followed users (feed) | List of {nick, timestamp, text, mediaURIs, likes} |
 | **list recommended** | GET **`/posts/recommended`** | {maxresults, page} | **-**  | List recommended posts for the given user, matched by the filter | List of {nick, timestamp, text, mediaURIs, likes} |
-| **create** | POST **`/posts`** | **-** | {id, hashtags, text, mediaURLs, ispublic} | Creates a post | **-** |
+| **create** | POST **`/posts`** | **-** | {hashtags, text, mediaURLs, ispublic} | Creates a post | **-** |
 | **update** | PUT **`/posts/{id}`** | **-** | {text, hashtags} | Updates own post | **-** |
 | **delete** | DELETE **`/posts/{id}`** | **-** | **-** | Deletes own post | **-** |
 | **like** | POST **`/posts/like/{id}`** | **-** | **-** | Like a post | **-** |
