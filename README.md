@@ -8,10 +8,10 @@ This idtoken contains the user info embedded.
 
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:--------:|:-------:|-------------|:--------:|
-| **list** | GET **`/users`** | {id, email, nick, maxresults, page} | **-** | Get user(s) by the given qparams | List of {id, **fullname(*)**, nick, bio, followers, followings} (\* only if the user matched is the current user)|
-| **list recommended** | GET  **`/users/recommended`** | **-** | **-** | Get recomended user(s) for the given user | List of {id, nick, bio, followers, followings} |
-| **create** | POST **`/users`**  | **-** | {email, fullname, nick, zone, bio} | Creates a user | **-** |
-| **update** | PUT **`/users`**  | **-** | {nick, bio} | Updates information user | **-** |
+| **list** | GET **`/users`** | {id, email, nick, maxresults, page} | **-** | Get user(s) by the given qparams | List of {id, **fullname(*)**, nick, interests, followers, followings} (\* only if the user matched is the current user)|
+| **list recommended** | GET  **`/users/recommended`** | **-** | **-** | Get recomended user(s) for the given user | List of {id, nick, interests, followers, followings} |
+| **create** | POST **`/users`**  | **-** | {email, fullname, nick, interests, zone} | Creates a user | **-** |
+| **update** | PUT **`/users`**  | **-** | {nick, interests} | Updates information user | **-** |
 | **delete** | DELETE **`/users`** | **-** | **-** | Delete account (of user issuing the query) | **-** |
 | **follow** | POST **`/users/follow/{id}`** | **-** | **-** | Follow a user | **-** |
 | **unfollow** | DELETE **`/users/follow/{id}`** | **-** | **-** | Unfollow a user | **-** |
