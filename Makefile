@@ -1,8 +1,11 @@
 
 .PHONY: down clean
 
-run: clean 
-	docker compose up
+run: 
+	docker compose up -d
+
+reload:
+	docker compose build
 
 clean: 
 	docker compose down
