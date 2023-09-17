@@ -1,4 +1,4 @@
-## Usage
+## Usage (with docker)
 Build:
 ```bash
   make build
