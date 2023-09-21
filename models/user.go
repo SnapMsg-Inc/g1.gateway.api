@@ -18,4 +18,5 @@ type User struct {
 	Followers uint `json:"followers,omitempty"`
 	Followings uint `json:"followings,omitempty"`
 	Zone string `json:"zone,omitempty"`
+	IsAdmin bool `json:"is_admin,omitempty"`
 }
