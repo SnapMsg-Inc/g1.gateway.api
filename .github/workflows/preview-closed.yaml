@@ -15,4 +15,4 @@ jobs:
     - name: Destroy preview environment
       uses: okteto/destroy-preview@latest
       with:
-        name: pr-${{ github.event.number }}-snapmsg
+        name: pr-${{ github.event.number }}-marioax
