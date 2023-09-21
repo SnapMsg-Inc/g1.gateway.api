@@ -70,7 +70,7 @@ func Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 
-// @Router /users [put]
+// @Router /users [patch]
 // @Security Bearer
 func Update(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })

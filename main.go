@@ -36,7 +36,7 @@ func main() {
 		/* users routes */
 		private.GET("/users", users.Get)
 		private.GET("/users/recommended", users.GetRecommended)
-		private.PUT("/users", users.Update)
+		private.PATCH("/users", users.Update)
 		private.DELETE("/users", users.Delete)
 
 		private.POST("/users/follow/:uid", users.Follow)
