@@ -5,8 +5,7 @@ PORT=3000
 .PHONY: build clean
 
 help:          ## Show this help
-	@sed -n '/^[a-z#]/p' Makefile | sed 's/:.*#/:\t/g' | sed 's/## //g'
-	#@sed -n '/^[a-z#]/p' Makefile | sed 's/:.*#/:\t/g' | sed 's/## //g'
+	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
 build: clean   ## Build the docker image
 	docker build -t api-gateway .
