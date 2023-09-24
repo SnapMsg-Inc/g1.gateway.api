@@ -5,7 +5,7 @@ type UserInfo struct {
 	Email string `json:"email"`
 	FullName string `json:"fullname"`
 	Birthdate string `json:"birthdate"`
-	Nick string `json:"nickname"`
+	Nick string `json:"nick"`
 	Interests []string `json:"interests"`
 	Zone string `json:"zone"`
 }
@@ -15,7 +15,7 @@ type User struct {
 	Email string `json:"email,omitempty"`
 	FullName string `json:"fullname,omitempty"`
 	Birthdate string `json:"birthdate,omitempty"`
-	Nick string `json:"nickname"`
+	Nick string `json:"nick"`
 	Interests []string `json:"interests"`
 	Followers uint `json:"followers,omitempty"`
 	Followings uint `json:"followings,omitempty"`

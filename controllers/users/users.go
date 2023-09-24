@@ -1,11 +1,19 @@
 package users
 
 import (
+	"os"
+	"fmt"
+//	"io/ioutil"
+	"bytes"
+	"encoding/json"
 	"net/http"
+	
 	"github.com/gin-gonic/gin"
-	_ "github.com/SnapMsg-Inc/g1.gateway.api/models"
+	models "github.com/SnapMsg-Inc/g1.gateway.api/models"
+	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
+var USERS_URL = os.Getenv("USERS_URL");
 
 
 // List users godoc
@@ -25,7 +33,10 @@ import (
 // @Router /users [get]
 // @Security Bearer
 func Get(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
+	var u models.User;
+	c.BindJSON(&u);
+
+	//c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
 }
 
 
@@ -57,7 +68,25 @@ func GetRecommended(c *gin.Context) {
 // @Success 200 
 // @Router /users [post]
 func Create(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
+	var u models.UserInfo;
+	c.BindJSON(&u);
+	
+	// user must exist in firebase 
+	u_record, err := middlewares.Auth.GetUserByEmail(c, u.Email);
+	
+	if (err != nil) {
+		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()});
+	}
+
+	// forward request
+	u_json, err := json.Marshal(&u);
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, u_record.UID);
+	res, err := http.Post(url, "application/json", bytes.NewReader(u_json));
+	
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error" : err.Error()});
+	}
+	c.DataFromReader(http.StatusOK, res.ContentLength, "application/json", res.Body, nil)
 }
 
 

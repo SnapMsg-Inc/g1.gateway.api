@@ -21,7 +21,7 @@ import (
 
 
 var app *firebase.App
-var auth_client *auth.Client
+var Auth *auth.Client
 
 
 func init() {
@@ -33,7 +33,7 @@ func init() {
 	if (err != nil) {
 		log.Fatalf("error initializing app: %v", err);
 	}
-	auth_client, err = app.Auth(ctx);
+	Auth, err = app.Auth(ctx);
 
 	if (err != nil) {
 		log.Fatalf("error creating auth client: %v", err);
@@ -52,7 +52,7 @@ func authenticate(c *gin.Context) {
 	token_str := bearer_token[1];
 
 	//ctx := context.Background()
-	token, err := auth_client.VerifyIDToken(c, token_str);
+	token, err := Auth.VerifyIDToken(c, token_str);
 	if (err != nil) {
 		// Unauthenticated
 		c.JSON(http.StatusUnauthorized, gin.H{ "status" : "unauthenticated" });

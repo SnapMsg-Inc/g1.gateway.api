@@ -17,7 +17,7 @@ import (
 // @Accept json 
 // @Produce json
 // @Success 200 
-// @Router /admin/users/:uid [patch]
+// @Router /admin/users/:uid [post]
 // @Security Bearer
 func Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
