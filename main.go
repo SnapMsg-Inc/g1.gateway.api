@@ -2,16 +2,16 @@ package main
 
 import (
 	//"net/http"
+	docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
-	users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
 	posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
-	//	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
-	docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
+	users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
+	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
+	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
-
 
 // @title SnapMsg API
 // @version 1.0
@@ -23,39 +23,51 @@ import (
 // @tag.name posts methods
 // @tag.name admin methods
 func main() {
-	router := gin.Default() // router with Default middleware
 	docs.SwaggerInfo.BasePath = "/"
+	router := gin.Default() // router with Default middleware
 
-	/* users routes */
-	router.GET("/users", users.Get)
-	router.GET("/users/recommended", users.GetRecommended)
+	/* create user is public  */
 	router.POST("/users", users.Create)
-	router.PUT("/users", users.Update)
-	router.DELETE("/users", users.Delete)
 
-	router.POST("/users/follow/:uid", users.Follow)
-	router.DELETE("/users/follow/:uid", users.Unfollow)
+	/* private routes */
+	private := router.Group("/")
+	private.Use(middlewares.Authentication())
+	{
+		/* users routes */
+		private.GET("/users", users.Get)
+		private.GET("/users/recommended", users.GetRecommended)
+		private.PATCH("/users", users.Update)
+		private.DELETE("/users", users.Delete)
 
-	/* posts routes */
-	router.GET("/posts", posts.Get)
-	router.GET("/posts/feed", posts.GetFeed)
-	router.GET("/posts/recommended", posts.GetRecommended)
-	router.POST("/posts", posts.Create)
-	router.PUT("/posts/:pid", posts.Update)
-	router.DELETE("/posts/:pid", posts.Delete)
+		private.POST("/users/follow/:uid", users.Follow)
+		private.DELETE("/users/follow/:uid", users.Unfollow)
 
-	router.POST("/posts/like/:pid", posts.Like)
-	router.DELETE("/posts/like/:pid", posts.Unlike)
+		/* posts routes */
+		private.GET("/posts", posts.Get)
+		private.GET("/posts/feed", posts.GetFeed)
+		private.GET("/posts/recommended", posts.GetRecommended)
+		private.POST("/posts", posts.Create)
+		private.PUT("/posts/:pid", posts.Update)
+		private.DELETE("/posts/:pid", posts.Delete)
 
-	router.GET("/posts/fav", posts.GetFavs)
-	router.POST("/posts/fav/:pid", posts.Fav)
-	router.DELETE("/posts/fav/:pid", posts.Unfav)
+		private.POST("/posts/like/:pid", posts.Like)
+		private.DELETE("/posts/like/:pid", posts.Unlike)
 
-	/* messaging routes */
-	/* admin routes */
-	//router.PUT("/admin/users/:uid", admin.Create)
-	//router.DELETE("/admin/users/:uid", admin.DeleteAnyUser)
-	//router.DELETE("/admin/posts/:pid", admin.DeleteAnyPost)
+		private.GET("/posts/fav", posts.GetFavs)
+		private.POST("/posts/fav/:pid", posts.Fav)
+		private.DELETE("/posts/fav/:pid", posts.Unfav)
+
+		/* messaging routes */
+
+		/* admin routes (must authorize) */
+		admin_group := router.Group("/admin")
+		admin_group.Use(middlewares.Authorization())
+		{
+			admin_group.PUT("/users/:uid", admin.Create)
+			admin_group.DELETE("/users/:uid", admin.DeleteUser)
+			admin_group.DELETE("/posts/:pid", admin.DeletePost)
+		}
+	}
 
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":3000") // service running in port 3000
