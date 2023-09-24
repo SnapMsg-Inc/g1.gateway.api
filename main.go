@@ -35,6 +35,7 @@ func main() {
 	{
 		/* users routes */
 		private.GET("/users", users.Get)
+		private.GET("/users/me", users.GetMe)
 		private.GET("/users/recommended", users.GetRecommended)
 		private.PATCH("/users", users.Update)
 		private.DELETE("/users", users.Delete)

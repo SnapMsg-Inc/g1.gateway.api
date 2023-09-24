@@ -60,24 +60,18 @@ func authenticate(c *gin.Context) {
 		return;
 	}
 	c.Set("FIREBASE_ID_TOKEN", token);
+	c.Set("FIREBASE_UID", token.UID);
 	c.Next();
 }
 
 func authorize(c *gin.Context) {
-	token_any, exists := c.Get("FIREBASE_ID_TOKEN");
-
-	if (!exists) {
-		c.Abort();
-		return;
-	}
-	token := token_any.(*auth.Token);
-
-	uid := token.UID;
+	uid := c.MustGet("FIREBASE_UID").(string);
 	url := fmt.Sprintf("%s/users?uid=%s", os.Getenv("USERS_URL"), uid);
 	res, err := http.Get(url);
 
 	if (err != nil) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{ "status" : "cannot authorize" });
+		c.Abort();
 		return;
 	}
 	defer res.Body.Close();
@@ -85,7 +79,7 @@ func authorize(c *gin.Context) {
 	json.NewDecoder(res.Body).Decode(users);
 
 	if (len(users) == 0 || users[0].IsAdmin == false) {
-		c.JSON(http.StatusBadRequest, gin.H{ "status" : "unauthorized" });
+		c.JSON(http.StatusForbidden, gin.H{ "status" : "forbidden operation" });
 		c.Abort();
 		return;
 	}

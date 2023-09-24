@@ -4,13 +4,13 @@ import (
 	"os"
 	"fmt"
 //	"io/ioutil"
-	"bytes"
-	"encoding/json"
+//	"bytes"
+//	"encoding/json"
 	"net/http"
 	
 	"github.com/gin-gonic/gin"
-	models "github.com/SnapMsg-Inc/g1.gateway.api/models"
-	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
+//	models "github.com/SnapMsg-Inc/g1.gateway.api/models"
+//	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
 var USERS_URL = os.Getenv("USERS_URL");
@@ -29,14 +29,40 @@ var USERS_URL = os.Getenv("USERS_URL");
 // @x-order "1"
 // @Accept */* 
 // @Produce json
-// @Success 200 array models.User
+// @Success 200 array models.UserPublic
 // @Router /users [get]
 // @Security Bearer
 func Get(c *gin.Context) {
-	var u models.User;
-	c.BindJSON(&u);
+	path_query := c.Request.URL.RequestURI();
+	url := fmt.Sprintf("%s%s", USERS_URL, path_query);
+	res, err := http.Get(url);
 
-	//c.JSON(http.StatusOK, gin.H { "message": "not implemented yet" })
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error" : err.Error()});
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
+}
+
+
+// Get current user godoc
+// @Summary Get private data of current user 
+// @Schemes
+// @Description
+// @Tags users methods 
+// @Accept */* 
+// @Produce json
+// @Success 200 {} models.User
+// @Router /users/me [get]
+// @Security Bearer
+func GetMe(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string);
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid);
+	res, err := http.Get(url);
+
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error" : err.Error()});
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 
@@ -48,7 +74,7 @@ func Get(c *gin.Context) {
 // @x-order "2"
 // @Accept json
 // @Produce json
-// @Success 200 array models.User
+// @Success 200 array models.UserPublic
 // @Router /users/recommended [get]
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
@@ -67,26 +93,21 @@ func GetRecommended(c *gin.Context) {
 // @Produce json
 // @Success 200 
 // @Router /users [post]
+// @Security Bearer
 func Create(c *gin.Context) {
-	var u models.UserInfo;
-	c.BindJSON(&u);
+	//var u models.UserInfo;
+	//c.BindJSON(&u);
+	uid := c.MustGet("FIREBASE_UID").(string);
 	
-	// user must exist in firebase 
-	u_record, err := middlewares.Auth.GetUserByEmail(c, u.Email);
-	
-	if (err != nil) {
-		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()});
-	}
-
 	// forward request
-	u_json, err := json.Marshal(&u);
-	url := fmt.Sprintf("%s/users/%s", USERS_URL, u_record.UID);
-	res, err := http.Post(url, "application/json", bytes.NewReader(u_json));
+	//u_json, err := json.Marshal(&u);
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid);
+	res, err := http.Post(url, "application/json", c.Request.Body);
 	
 	if (err != nil) {
 		c.JSON(res.StatusCode, gin.H{"error" : err.Error()});
 	}
-	c.DataFromReader(http.StatusOK, res.ContentLength, "application/json", res.Body, nil)
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 
