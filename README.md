@@ -11,6 +11,10 @@ Remove image and container:
 ```bash
   make clean
 ```
+List all options:
+```bash
+  make help
+```
 
 ## REST specification
 
