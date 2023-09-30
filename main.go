@@ -7,9 +7,9 @@ import (
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
+	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
 	posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
 	users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
-	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
 	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
@@ -42,11 +42,11 @@ func main() {
 
 		private.POST("/users/me/follows/:uid", users.Follow)
 		private.DELETE("/users/me/follows/:uid", users.Unfollow)
-		
+
 		private.GET("/users/:uid/follows/:otheruid", users.GetFollow)
 		private.GET("/users/:uid/follows", users.GetFollows)
 		private.GET("/users/:uid/followers", users.GetFollowers)
-		
+
 		/* posts routes */
 		private.GET("/posts", posts.Get)
 		private.GET("/posts/feed", posts.GetFeed)
