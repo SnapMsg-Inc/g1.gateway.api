@@ -61,16 +61,23 @@ func authenticate(c *gin.Context) {
 	}
 	c.Set("FIREBASE_ID_TOKEN", token);
 	c.Set("FIREBASE_UID", token.UID);
+	c.Set("IS_ADMIN", false);
 	c.Next();
 }
 
+func Authentication() gin.HandlerFunc {
+	return authenticate;
+}
+
+
+
 func authorize(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string);
-	url := fmt.Sprintf("%s/users?uid=%s", os.Getenv("USERS_URL"), uid);
+	url := fmt.Sprintf("%s/users/%s", os.Getenv("USERS_URL"), uid);
 	res, err := http.Get(url);
 
 	if (err != nil) {
-		c.JSON(http.StatusServiceUnavailable, gin.H{ "status" : "cannot authorize" });
+		c.JSON(http.StatusServiceUnavailable, gin.H{ "status" : "users service unavailable" });
 		c.Abort();
 		return;
 	}
@@ -83,15 +90,12 @@ func authorize(c *gin.Context) {
 		c.Abort();
 		return;
 	}
+	c.Set("IS_ADMIN", true);
 	c.Next();
 }
-
-func Authentication() gin.HandlerFunc {
-	return authenticate;
-}
-
 
 func Authorization() gin.HandlerFunc {
 	return authorize;
 }
+
 
