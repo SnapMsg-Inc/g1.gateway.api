@@ -69,13 +69,20 @@ func GetRecommended(c *gin.Context) {
 // @Router /users [post]
 func Create(c *gin.Context) {
 	var u models.UserInfo;
-	c.BindJSON(&u);
+	err := c.BindJSON(&u);
+	
+	if (err != nil) {
+		c.JSON(http.StatusBadRequest, gin.H{"error" : err.Error()});
+	}
 	
 	// user must exist in firebase 
+	fmt.Printf("Email: %s\n", u.Email);
 	u_record, err := middlewares.Auth.GetUserByEmail(c, u.Email);
+	fmt.Printf("User record: %s\n", u_record);
 	
 	if (err != nil) {
 		c.JSON(http.StatusNotFound, gin.H{"error" : err.Error()});
+		return;
 	}
 
 	// forward request
