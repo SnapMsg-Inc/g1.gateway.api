@@ -105,8 +105,6 @@ func GetRecommended(c *gin.Context) {
 // @Router /users [post]
 // @Security Bearer
 func Create(c *gin.Context) {
-	//var u models.UserInfo;
-	//c.BindJSON(&u);
 	uid := c.MustGet("FIREBASE_UID").(string);
 	
 	// forward request
