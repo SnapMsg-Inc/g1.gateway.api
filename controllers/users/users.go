@@ -94,7 +94,7 @@ func GetRecommended(c *gin.Context) {
 
 // Create user godoc
 // @Summary Create a user  
-// @Param userinfo body models.UserInfo true "User info"
+// @Param userinfo body models.UserCreate true "User creation data"
 // @Schemes 
 // @Description 
 // @x-order "0"
@@ -105,8 +105,6 @@ func GetRecommended(c *gin.Context) {
 // @Router /users [post]
 // @Security Bearer
 func Create(c *gin.Context) {
-	//var u models.UserInfo;
-	//c.BindJSON(&u);
 	uid := c.MustGet("FIREBASE_UID").(string);
 	
 	// forward request
@@ -126,6 +124,7 @@ func Create(c *gin.Context) {
 // @Summary Update some user data 
 // @Param nick query string false "new nickname"
 // @Param interests query []string false "new interests"
+// @Param pic query string false "new profile picture"
 // @Description 
 // @Tags users methods 
 // @Accept json
