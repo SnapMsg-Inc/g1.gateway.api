@@ -2,7 +2,7 @@
 ##  
 PORT=3000
 
-.PHONY: build clean fetch-token format
+.PHONY: build clean fetch-id-token format
 
 help:          ## Show this help
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
