@@ -7,9 +7,9 @@ import (
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
+	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
 	posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
 	users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
-	admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
 	middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
@@ -27,20 +27,25 @@ func main() {
 	router := gin.Default() // router with Default middleware
 
 	/* create user is public  */
-	router.POST("/users", users.Create)
 
 	/* private routes */
 	private := router.Group("/")
 	private.Use(middlewares.Authentication())
 	{
 		/* users routes */
+		private.POST("/users", users.Create)
 		private.GET("/users", users.Get)
-		private.GET("/users/recommended", users.GetRecommended)
-		private.PATCH("/users", users.Update)
-		private.DELETE("/users", users.Delete)
+		private.GET("/users/me", users.GetMe)
+		private.GET("/users/me/recommended", users.GetRecommended)
+		private.PATCH("/users/me", users.Update)
+		private.DELETE("/users/me", users.Delete)
 
-		private.POST("/users/follow/:uid", users.Follow)
-		private.DELETE("/users/follow/:uid", users.Unfollow)
+		private.POST("/users/me/follows/:uid", users.Follow)
+		private.DELETE("/users/me/follows/:uid", users.Unfollow)
+
+		private.GET("/users/:uid/follows/:otheruid", users.GetFollow)
+		private.GET("/users/:uid/follows", users.GetFollows)
+		private.GET("/users/:uid/followers", users.GetFollowers)
 
 		/* posts routes */
 		private.GET("/posts", posts.Get)
@@ -60,7 +65,7 @@ func main() {
 		/* messaging routes */
 
 		/* admin routes (must authorize) */
-		admin_group := router.Group("/admin")
+		admin_group := private.Group("/admin")
 		admin_group.Use(middlewares.Authorization())
 		{
 			admin_group.PUT("/users/:uid", admin.Create)
