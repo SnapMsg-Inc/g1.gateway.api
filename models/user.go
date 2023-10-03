@@ -6,13 +6,13 @@ type User struct {
 	FullName  string             `json:"fullname,omitempty"`
 	Birthdate string             `json:"birthdate,omitempty" example:"YYYY-MM-DD"`
 	Nick      string             `json:"nick"`
-	Follows   int				 `json:"follows"`
-	Followers int				 `json:"followers"`
+	Follows   int                `json:"follows"`
+	Followers int                `json:"followers"`
 	Picture   string             `json:"pic"`
 	Interests []string           `json:"interests"`
 	Ocupation string             `json:"ocupation,omitempty"`
 	Zone      map[string]float32 `json:"zone,omitempty" example:"latitude:0.00,longitude:0.00"`
-	IsAdmin bool `json:"is_admin,omitempty"`
+	IsAdmin   bool               `json:"is_admin,omitempty"`
 }
 
 type UserCreate struct {
@@ -29,6 +29,8 @@ type UserCreate struct {
 type UserPublic struct {
 	ID        string   `json:"uid"`
 	Nick      string   `json:"nick"`
+	Follows   int      `json:"follows"`
+	Followers int      `json:"followers"`
 	Picture   string   `json:"pic"`
 	Interests []string `json:"interests"`
 }
