@@ -50,7 +50,7 @@ func Get(c *gin.Context) {
 // @Tags users methods
 // @Accept */*
 // @Produce json
-// @Success 200 {} models.User
+// @Success 200 {object} models.User
 // @Router /users/me [get]
 // @Security Bearer
 func GetMe(c *gin.Context) {
