@@ -5,6 +5,7 @@ type User struct {
 	Email     string             `json:"email,omitempty"`
 	FullName  string             `json:"fullname,omitempty"`
 	Birthdate string             `json:"birthdate,omitempty" example:"YYYY-MM-DD"`
+	Alias	  string             `json:"alias"`
 	Nick      string             `json:"nick"`
 	Follows   int                `json:"follows"`
 	Followers int                `json:"followers"`
@@ -19,6 +20,7 @@ type UserCreate struct {
 	Email     string             `json:"email"`
 	FullName  string             `json:"fullname"`
 	Birthdate string             `json:"birthdate" example:"YYYY-MM-DD"`
+	Alias	  string             `json:"alias"`
 	Nick      string             `json:"nick"`
 	Picture   string             `json:"pic"`
 	Interests []string           `json:"interests"`
@@ -28,6 +30,7 @@ type UserCreate struct {
 
 type UserPublic struct {
 	ID        string   `json:"uid"`
+	Alias	  string   `json:"alias"`
 	Nick      string   `json:"nick"`
 	Follows   int      `json:"follows"`
 	Followers int      `json:"followers"`
