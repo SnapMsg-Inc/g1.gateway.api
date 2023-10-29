@@ -1,17 +1,21 @@
 package posts
 
 import (
+    "fmt"
+    "os"
+	"net/http"
+    "encoding/json"
+
 	_ "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // Get posts godoc
 // @Summary Get posts filtering by query
-// @Param h query []string false "hashtags"
+// @Param hashtags query []string false "hashtags"
 // @Param nick query string false "author's nickname"
 // @Param text query string false "text to match"
-// @Param maxresults query int true "max results"
+// @Param query int true "max results"
 // @Param page query int true "page"
 // @Schemes
 // @Description
@@ -21,40 +25,17 @@ import (
 // @Success 200 array models.Post
 // @Router /posts [get]
 // @Security Bearer
-func Get(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
-}
+func Get(c *gin.Context)
+{
+    path_query := c.Request.URL.RequestURI();
+    url := fmt.Sprintf("%s%s", POSTS_URL, path_query);
+    res, err := http.Get(url);
 
-// Get feed godoc
-// @Summary Get feed of the user making the request
-// @Param maxresults query int true "max results"
-// @Param page query int true "page"
-// @Schemes
-// @Description
-// @Tags posts methods
-// @Accept json
-// @Produce json
-// @Success 200 array models.Post
-// @Router /posts/feed [get]
-// @Security Bearer
-func GetFeed(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
-}
-
-// Get recommended godoc
-// @Summary Get recommended posts for a user
-// @Param maxresults query int true "max results"
-// @Param page query int true "page"
-// @Schemes
-// @Description
-// @Tags posts methods
-// @Accept json
-// @Produce json
-// @Success 200 array models.Post
-// @Router /posts/recommended [get]
-// @Security Bearer
-func GetRecommended(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err,Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Create post godoc
@@ -68,8 +49,19 @@ func GetRecommended(c *gin.Context) {
 // @Success 200
 // @Router /posts [post]
 // @Security Bearer
-func Create(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+func Create(c *gin.Context)
+{
+    uid := c.MustGet("FIREBASE_UID").(string);
+
+    // fetch user's nickname
+    url := fmt.Sprintf("%s/users?uid=%s", USERS_URL, uid);
+    res, err := http.Get(url);
+    
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err,Error });
+        return;
+    }
+    
 }
 
 // Update post godoc
@@ -101,6 +93,38 @@ func Update(c *gin.Context) {
 // @Router /posts/{pid} [delete]
 // @Security Bearer
 func Delete(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+}
+
+// Get feed godoc
+// @Summary Get feed of the user making the request
+// @Param limit query int true "max results"
+// @Param page query int true "page"
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200 array models.Post
+// @Router /posts/feed [get]
+// @Security Bearer
+func GetFeed(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+}
+
+// Get recommended godoc
+// @Summary Get recommended posts for a user
+// @Param limit query int true "max results"
+// @Param page query int true "page"
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200 array models.Post
+// @Router /posts/recommended [get]
+// @Security Bearer
+func GetRecommended(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
 }
 
