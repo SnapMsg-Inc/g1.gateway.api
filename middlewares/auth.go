@@ -32,7 +32,7 @@ func init() {
 	}
 	Auth, err = app.Auth(ctx)
 
-	if (err != nil ){
+	if (err != nil ) {
 		log.Fatalf("error creating auth client: %v", err);
 	}
 }
@@ -103,9 +103,10 @@ func PostAuthorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// shouldnt do anything if there's no auth user
 		uid := c.MustGet("FIREBASE_UID").(string);
-
+		pid := c.Param("pid");
+		
 		// fetch post from microservice (public or private)
-		url := fmt.Sprintf("%s/posts/%s/author/%s", os.Getenv("POSTS_URL"), uid, c.Param("pid"));
+		url := fmt.Sprintf("%s/posts/%s/author/%s", os.Getenv("POSTS_URL"), uid, pid);
 		res, err := http.Get(url);
 		
 		if (err != nil) {
@@ -116,7 +117,7 @@ func PostAuthorization() gin.HandlerFunc {
 		defer res.Body.Close();
 		var is_author bool;
 		json.NewDecoder(res.Body).Decode(&is_author);
-
+		fmt.Printf("%s\n", is_author);
 		if (!is_author) {
 			c.JSON(http.StatusForbidden, gin.H{"status": "forbidden operation"});
 			c.Abort();

@@ -61,12 +61,12 @@ func main() {
         private.GET("/posts/feed", posts.GetFeed)
         private.GET("/posts/recommended", posts.GetRecommended)
 
-        private.GET("/posts/fav", posts.GetFavs)
-        private.POST("/posts/fav/:pid", posts.Fav)
-        private.DELETE("/posts/fav/:pid", posts.Unfav)
+        private.GET("/posts/favs", posts.GetFavs)
+        private.POST("/posts/favs/:pid", posts.Fav)
+        private.DELETE("/posts/favs/:pid", posts.Unfav)
 
-        private.POST("/posts/like/:pid", posts.Like)
-        private.DELETE("/posts/like/:pid", posts.Unlike)
+        private.POST("/posts/likes/:pid", posts.Like)
+        private.DELETE("/posts/likes/:pid", posts.Unlike)
 
         /* messaging routes */
 

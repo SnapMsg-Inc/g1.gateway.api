@@ -97,6 +97,7 @@ func Create(c *gin.Context) {
 // @Param pid path string true "post id to update"
 // @Param text body string false "new text for the post"
 // @Param hashtags body []string false "new hashtags for the post"
+// @Param media_uri body []string false "new media uir's for the post"
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -106,15 +107,18 @@ func Create(c *gin.Context) {
 // @Router /posts/{pid} [patch]
 // @Security Bearer
 func Update(c *gin.Context) {
-// TODO: check if user is the owner of the post
-// uid := c.MustGet("FIREBASE_UID").(string);
-// pid := c.Param("pid");
+    pid := c.Param("pid");
+	url := fmt.Sprintf("%s/posts/%s", POSTS_URL, pid);
+    fmt.Printf("%s\n", url);
+	req, _ := http.NewRequest("PATCH", url, c.Request.Body);
+	client := &http.Client{};
+	res, err := client.Do(req);
 
-// fetch 
-
-// ask to posts service if the user is the owner of the post
-    c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
-
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
 // Delete post godoc
@@ -155,10 +159,10 @@ func Delete(c *gin.Context) {
 // @Security Bearer
 func GetFeed(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
-    path_query := strings.Split(c.Request.URL.RequestURI(), "?");
-    url := fmt.Sprintf("%s/posts/%s/feed%s", POSTS_URL, uid, path_query);
+    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+    url := fmt.Sprintf("%s/posts/%s/feed?%s", POSTS_URL, uid, path_query);
+    fmt.Printf("%s\n", url)
     res, err := http.Get(url);
-
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
@@ -180,8 +184,8 @@ func GetFeed(c *gin.Context) {
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
-    path_query := strings.Split(c.Request.URL.RequestURI(), '?');
-    url := fmt.Sprintf("%s/posts/%s/recommended%s", POSTS_URL, uid, path_query);
+    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, path_query);
     res, err := http.Get(url);
 
     if (err != nil) {
@@ -203,7 +207,16 @@ func GetRecommended(c *gin.Context) {
 // @Router /posts/like/{pid} [post]
 // @Security Bearer
 func Like(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+	uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);
+    res, err := http.Post(url, nil);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Unlike post godoc
@@ -218,11 +231,24 @@ func Like(c *gin.Context) {
 // @Router /posts/like/{pid} [delete]
 // @Security Bearer
 func Unlike(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+	url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid)
+	req, _ := http.NewRequest("DELETE", url, nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
 // List favs godoc
 // @Summary List user fav posts
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -232,7 +258,16 @@ func Unlike(c *gin.Context) {
 // @Router /posts/fav [get]
 // @Security Bearer
 func GetFavs(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    uid := c.MustGet("FIREBASE_UID").(string);
+    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+    url := fmt.Sprintf("%s/posts/%s/favs?%s", POSTS_URL, uid, path_query);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Add fav godoc
@@ -247,7 +282,16 @@ func GetFavs(c *gin.Context) {
 // @Router /posts/fav/{pid} [post]
 // @Security Bearer
 func Fav(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+	uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/favs/%s", POSTS_URL, uid, pid);
+    res, err := http.Post(url, nil);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+
 }
 
 // Unfav a post godoc
@@ -262,5 +306,16 @@ func Fav(c *gin.Context) {
 // @Router /posts/fav/{pid} [delete]
 // @Security Bearer
 func Unfav(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/favs/%s", POSTS_URL, uid, pid)
+    req, _ := http.NewRequest("DELETE", url, nil)
+    client := &http.Client{}
+    res, err := client.Do(req)
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
