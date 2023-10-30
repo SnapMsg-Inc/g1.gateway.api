@@ -114,7 +114,7 @@ func Update(c *gin.Context) {
 	client := &http.Client{};
 	res, err := client.Do(req);
 
-	if err != nil {
+	if (err != nil) {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
@@ -138,7 +138,7 @@ func Delete(c *gin.Context) {
 	client := &http.Client{}
 	res, err := client.Do(req)
 
-	if err != nil {
+	if (err != nil) {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
@@ -159,10 +159,33 @@ func Delete(c *gin.Context) {
 // @Security Bearer
 func GetFeed(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
-    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    url := fmt.Sprintf("%s/posts/%s/feed?%s", POSTS_URL, uid, path_query);
-    fmt.Printf("%s\n", url)
+    query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+
+    // fetch follows list
+    url := fmt.Sprintf("%s/users/%s/follows", USERS_URL, uid);
     res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+    }
+    var follows []models.UserPublic;
+    err = json.NewDecoder(res.Body).Decode(&follows);
+    
+    if (err != nil) {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse body" });
+        return;
+    }
+
+     // parse follows uid to http query format
+    for _, follow := range follows {
+        query += "&uid=" + follow.ID;
+    }
+
+    // fetch (private and public) posts of followed
+    url = fmt.Sprintf("%s/posts?%s&private=True&public=True", POSTS_URL, query);
+    fmt.Printf("[URL] %s\n", url)
+    res, err = http.Get(url);
+
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
