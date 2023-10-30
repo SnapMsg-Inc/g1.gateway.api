@@ -160,9 +160,31 @@ func Delete(c *gin.Context) {
 func GetFeed(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
     path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    url := fmt.Sprintf("%s/posts/%s/feed?%s", POSTS_URL, uid, path_query);
+
+    // fetch follows list
+    url := fmt.Sprintf("%s/users/%s/follows", USER_URL, uid);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+    }
+    var follows []models.UserPublic;
+    var follows_uid [len(follows)]string;
+    json.NewDecoder(res.Body).Decode(&follows);
+
+    // parse follows uid
+    var follows_query string;
+
+    for (i, follow := range follows) {
+        follows_query + "uid=" + follow + "&";
+    }
+    fmt.Printf("[FOLLOWS_UID] %s", follows_query);
+
+    // fetch (private and public) posts of followed
+    url := fmt.Sprintf("%s/posts?%s&%s&private=True&public=True", POSTS_URL, uid, path_query, follows_query);
     fmt.Printf("%s\n", url)
     res, err := http.Get(url);
+
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
