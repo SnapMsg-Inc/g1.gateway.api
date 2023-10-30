@@ -210,7 +210,7 @@ func Like(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string);
     pid := c.Param("pid");
     url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);
-    res, err := http.Post(url, nil);
+    res, err := http.Post(url, "application/json", nil);
 
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
@@ -285,7 +285,7 @@ func Fav(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string);
     pid := c.Param("pid");
     url := fmt.Sprintf("%s/posts/%s/favs/%s", POSTS_URL, uid, pid);
-    res, err := http.Post(url, nil);
+    res, err := http.Post(url, "application/json", nil);
 
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
