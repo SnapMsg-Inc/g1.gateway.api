@@ -172,7 +172,7 @@ func GetFeed(c *gin.Context) {
     var follows_uid [len(follows)]string;
     json.NewDecoder(res.Body).Decode(&follows);
 
-    // parse follows uid
+    // parse follows uid to http query format
     var follows_query string;
 
     for (i, follow := range follows) {
