@@ -5,7 +5,7 @@ import "time"
 type Post struct {
 	ID        uint      `json:"pid" gorm:"primary_key"`
 	UID       string    `json:"uid"`
-	Nickname  string    `json:"nick"`
+	Nick  string        `json:"nick"`
 	Timestamp time.Time `json:"timestamp"`
 	Hashtags  []string  `json:"hashtags"`
 	Text      string    `json:"text" gorm:"size:300"`
@@ -14,9 +14,11 @@ type Post struct {
 }
 
 type PostCreate struct {
-	Hashtags []string `json:"hashtags"`
+	UID      string   `json:"uid" swaggerignore:"true"`
+	Nick     string   `json:"nick" swaggerignore:"true"`
 	Text     string   `json:"text" gorm:"size:300"`
-	MediaURI []string `json:"mediaURI"`
+	Hashtags []string `json:"hashtags,omitempty"`
+	MediaURI []string `json:"media_uri,omitempty"`
 	Private bool      `json:"is_private"`
 }
 

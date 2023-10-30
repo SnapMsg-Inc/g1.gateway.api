@@ -3,20 +3,26 @@ package posts
 import (
     "fmt"
     "os"
+    "bytes"
+    "strings"
 	"net/http"
     "encoding/json"
-
-	_ "github.com/SnapMsg-Inc/g1.gateway.api/models"
+    
+    models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	"github.com/gin-gonic/gin"
 )
+
+var USERS_URL = os.Getenv("USERS_URL")
+var POSTS_URL = os.Getenv("POSTS_URL")
+
 
 // Get posts godoc
 // @Summary Get posts filtering by query
 // @Param hashtags query []string false "hashtags"
 // @Param nick query string false "author's nickname"
 // @Param text query string false "text to match"
-// @Param query int true "max results"
-// @Param page query int true "page"
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -25,14 +31,13 @@ import (
 // @Success 200 array models.Post
 // @Router /posts [get]
 // @Security Bearer
-func Get(c *gin.Context)
-{
+func Get(c *gin.Context) {
     path_query := c.Request.URL.RequestURI();
     url := fmt.Sprintf("%s%s", POSTS_URL, path_query);
     res, err := http.Get(url);
 
     if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err,Error });
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
@@ -40,7 +45,7 @@ func Get(c *gin.Context)
 
 // Create post godoc
 // @Summary Create a new post
-// @Param postinfo body models.PostInfo true "data for the new post"
+// @Param PostCreate body models.PostCreate true "data for the new post"
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -49,19 +54,42 @@ func Get(c *gin.Context)
 // @Success 200
 // @Router /posts [post]
 // @Security Bearer
-func Create(c *gin.Context)
-{
-    uid := c.MustGet("FIREBASE_UID").(string);
+func Create(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string)
 
     // fetch user's nickname
     url := fmt.Sprintf("%s/users?uid=%s", USERS_URL, uid);
     res, err := http.Get(url);
     
     if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err,Error });
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    defer res.Body.Close();
+    var user []models.UserPublic;
+    err = json.NewDecoder(res.Body).Decode(&user);
+    
+    if (err != nil) {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse body" });
         return;
     }
     
+    // set PostCreate data
+    var post models.PostCreate;
+    c.ShouldBindJSON(&post);
+    post.UID = uid;
+    post.Nick = user[0].Nick;
+    
+    var body bytes.Buffer;
+    json.NewEncoder(&body).Encode(post);
+    
+    url = fmt.Sprintf("%s/posts", POSTS_URL);
+    res, err = http.Post(url, "application/json", &body);
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Update post godoc
@@ -78,7 +106,15 @@ func Create(c *gin.Context)
 // @Router /posts/{pid} [patch]
 // @Security Bearer
 func Update(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+// TODO: check if user is the owner of the post
+// uid := c.MustGet("FIREBASE_UID").(string);
+// pid := c.Param("pid");
+
+// fetch 
+
+// ask to posts service if the user is the owner of the post
+    c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+
 }
 
 // Delete post godoc
@@ -93,13 +129,22 @@ func Update(c *gin.Context) {
 // @Router /posts/{pid} [delete]
 // @Security Bearer
 func Delete(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+	url := fmt.Sprintf("%s/posts/%s", POSTS_URL, c.Param("pid"));
+	req, _ := http.NewRequest("DELETE", url, nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
 // Get feed godoc
 // @Summary Get feed of the user making the request
-// @Param limit query int true "max results"
-// @Param page query int true "page"
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -109,13 +154,22 @@ func Delete(c *gin.Context) {
 // @Router /posts/feed [get]
 // @Security Bearer
 func GetFeed(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    uid := c.MustGet("FIREBASE_UID").(string)
+    path_query := strings.Split(c.Request.URL.RequestURI(), "?");
+    url := fmt.Sprintf("%s/posts/%s/feed%s", POSTS_URL, uid, path_query);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Get recommended godoc
 // @Summary Get recommended posts for a user
-// @Param limit query int true "max results"
-// @Param page query int true "page"
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
 // @Tags posts methods
@@ -125,7 +179,16 @@ func GetFeed(c *gin.Context) {
 // @Router /posts/recommended [get]
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    uid := c.MustGet("FIREBASE_UID").(string)
+    path_query := strings.Split(c.Request.URL.RequestURI(), '?');
+    url := fmt.Sprintf("%s/posts/%s/recommended%s", POSTS_URL, uid, path_query);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 // Like post godoc

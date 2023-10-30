@@ -13,6 +13,10 @@ build: clean   ## Build the docker image
 run: build     ## Run the container (and build)
 	docker run --rm --name api-gateway -p ${PORT}:3000 api-gateway:latest 
 
+run-local:
+	swag init
+	go run main.go
+
 format:        ## Format the source code
 	gofmt -s -w . 
 	#go fmt github.com/SnapMsg-Inc/g1.gateway.api

@@ -50,8 +50,13 @@ func main() {
         /* posts routes */
         private.POST("/posts", posts.Create)
         private.GET("/posts", posts.Get)
-        private.PATCH("/posts/:pid", posts.Update)
-        private.DELETE("/posts/:pid", posts.Delete)
+        
+        write_posts := private.Group("/posts")
+        write_posts.Use(middlewares.PostAuthorization())
+        {
+            write_posts.PATCH("/:pid", posts.Update)
+            write_posts.DELETE("/:pid", posts.Delete)
+        }
 
         private.GET("/posts/feed", posts.GetFeed)
         private.GET("/posts/recommended", posts.GetRecommended)
@@ -68,7 +73,7 @@ func main() {
 
         /* admin routes (must authorize) */
         admin_group := private.Group("/admin")
-        admin_group.Use(middlewares.Authorization())
+        admin_group.Use(middlewares.AdminAuthorization())
         {
             admin_group.PUT("/users/:uid", admin.Create)
             admin_group.DELETE("/users/:uid", admin.DeleteUser)
