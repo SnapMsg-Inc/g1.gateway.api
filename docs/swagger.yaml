@@ -313,7 +313,7 @@ paths:
       summary: Update some fields of a post
       tags:
       - posts methods
-  /posts/fav:
+  /posts/favs:
     get:
       consumes:
       - application/json
@@ -347,7 +347,7 @@ paths:
       summary: List user fav posts
       tags:
       - posts methods
-  /posts/fav/{pid}:
+  /posts/favs/{pid}:
     delete:
       consumes:
       - application/json
@@ -421,6 +421,28 @@ paths:
       tags:
       - posts methods
   /posts/like/{pid}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: pid to check like
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if current user liked a given post
+      tags:
+      - posts methods
+  /posts/likes/{pid}:
     delete:
       consumes:
       - application/json
@@ -457,6 +479,51 @@ paths:
       security:
       - Bearer: []
       summary: Add a like to a post
+      tags:
+      - posts methods
+  /posts/me:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: csv
+        description: hashtags
+        in: query
+        items:
+          type: string
+        name: hashtags
+        type: array
+      - description: text to match
+        in: query
+        name: text
+        type: string
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get posts filtering by query
       tags:
       - posts methods
   /posts/recommended:

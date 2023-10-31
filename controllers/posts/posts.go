@@ -43,6 +43,34 @@ func Get(c *gin.Context) {
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
+// Get posts of current user (public and privates) godoc
+// @Summary Get posts filtering by query
+// @Param hashtags query []string false "hashtags"
+// @Param text query string false "text to match"
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200 array models.Post
+// @Router /posts/me [get]
+// @Security Bearer
+func GetMe(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string)
+    query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+    url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true", POSTS_URL, uid, query);
+    fmt.Printf("[url] %s\n", url);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
+}
+
 // Create post godoc
 // @Summary Create a new post
 // @Param PostCreate body models.PostCreate true "data for the new post"
@@ -227,7 +255,7 @@ func GetRecommended(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /posts/like/{pid} [post]
+// @Router /posts/likes/{pid} [post]
 // @Security Bearer
 func Like(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string);
@@ -251,7 +279,7 @@ func Like(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /posts/like/{pid} [delete]
+// @Router /posts/likes/{pid} [delete]
 // @Security Bearer
 func Unlike(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
@@ -278,7 +306,7 @@ func Unlike(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/fav [get]
+// @Router /posts/favs [get]
 // @Security Bearer
 func GetFavs(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
@@ -302,7 +330,7 @@ func GetFavs(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /posts/fav/{pid} [post]
+// @Router /posts/favs/{pid} [post]
 // @Security Bearer
 func Fav(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string);
@@ -326,7 +354,7 @@ func Fav(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /posts/fav/{pid} [delete]
+// @Router /posts/favs/{pid} [delete]
 // @Security Bearer
 func Unfav(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
@@ -343,7 +371,19 @@ func Unfav(c *gin.Context) {
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
-func GetLikes(c *gin.Context) {
+// Get Like godoc
+// @Summary Check if current user liked a given post
+// @Schemes
+// @Description
+// @Param pid path string true "pid to check like"
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Failure 404
+// @Success 200
+// @Router /posts/like/{pid} [get]
+// @Security Bearer
+func GetLike(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
     pid := c.Param("pid");
     url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);

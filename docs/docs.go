@@ -218,7 +218,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/fav": {
+        "/posts/favs": {
             "get": {
                 "security": [
                     {
@@ -269,7 +269,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/fav/{pid}": {
+        "/posts/favs/{pid}": {
             "post": {
                 "security": [
                     {
@@ -385,6 +385,42 @@ const docTemplate = `{
             }
         },
         "/posts/like/{pid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Check if current user liked a given post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "pid to check like",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/posts/likes/{pid}": {
             "post": {
                 "security": [
                     {
@@ -444,6 +480,73 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/posts/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get posts filtering by query",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "hashtags",
+                        "name": "hashtags",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text to match",
+                        "name": "text",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Post"
+                            }
+                        }
                     }
                 }
             }

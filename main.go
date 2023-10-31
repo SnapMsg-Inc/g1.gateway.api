@@ -11,6 +11,8 @@ import (
     posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
+    cors "github.com/rs/cors/wrapper/gin"
+
 )
 
 // @title SnapMsg API
@@ -27,7 +29,15 @@ func main() {
     router := gin.Default() // router with Default middleware
     
     /* cors middleware */
-    router.Use(middlewares.CORS())
+    // router.Use(middlewares.CORS())
+    cors_middleware := cors.New(cors.Options{
+        AllowedOrigins: []string{ "https://backoffice-backoffice-marioax.cloud.okteto.net" },
+        AllowCredentials: true,
+        AllowedMethods: []string{ "POST", "GET", "PATCH", "DELETE" },
+        // Enable Debugging for testing, consider disabling in production
+        Debug: true,
+    })
+    router.Use(cors_middleware)
     
 
     /* private routes */
@@ -52,6 +62,7 @@ func main() {
         /* posts routes */
         private.POST("/posts", posts.Create)
         private.GET("/posts", posts.Get)
+        private.GET("/posts/me", posts.GetMe)
         
         write_posts := private.Group("/posts")
         write_posts.Use(middlewares.PostAuthorization())
@@ -67,7 +78,7 @@ func main() {
         private.POST("/posts/favs/:pid", posts.Fav)
         private.DELETE("/posts/favs/:pid", posts.Unfav)
 
-        private.GET("/posts/likes/:pid", posts.GetLikes)
+        private.GET("/posts/likes/:pid", posts.GetLike)
         private.POST("/posts/likes/:pid", posts.Like)
         private.DELETE("/posts/likes/:pid", posts.Unlike)        
 
