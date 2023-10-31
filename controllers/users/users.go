@@ -22,7 +22,7 @@ var USERS_URL = os.Getenv("USERS_URL")
 // @Param uid query string false "user id"
 // @Param email query string false "user email"
 // @Param nick query string false "user nickname"
-// @Param maxresults query int true "max results"
+// @Param limit query int true "max results"
 // @Param page query int true "page number"
 // @Tags users methods
 // @x-order "1"
