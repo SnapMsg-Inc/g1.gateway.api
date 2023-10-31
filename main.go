@@ -3,7 +3,7 @@ package main
 import (
     //"net/http"
     docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
-    "github.com/gin-gonic/gin"
+    gin "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"     // swagger embed files
     ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
@@ -25,8 +25,10 @@ import (
 func main() {
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
-
-    /* create user is public  */
+    
+    /* cors middleware */
+    router.Use(middlewares.CORS())
+    
 
     /* private routes */
     private := router.Group("/")
@@ -65,8 +67,9 @@ func main() {
         private.POST("/posts/favs/:pid", posts.Fav)
         private.DELETE("/posts/favs/:pid", posts.Unfav)
 
+        private.GET("/posts/likes/:pid", posts.GetLikes)
         private.POST("/posts/likes/:pid", posts.Like)
-        private.DELETE("/posts/likes/:pid", posts.Unlike)
+        private.DELETE("/posts/likes/:pid", posts.Unlike)        
 
         /* messaging routes */
 
