@@ -342,3 +342,16 @@ func Unfav(c *gin.Context) {
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
+
+func GetLikes(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);
+
+    res, err := http.Get(url);
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}

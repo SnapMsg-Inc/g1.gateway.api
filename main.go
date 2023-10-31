@@ -65,8 +65,9 @@ func main() {
         private.POST("/posts/favs/:pid", posts.Fav)
         private.DELETE("/posts/favs/:pid", posts.Unfav)
 
+        private.GET("/posts/likes/:pid", posts.GetLikes)
         private.POST("/posts/likes/:pid", posts.Like)
-        private.DELETE("/posts/likes/:pid", posts.Unlike)
+        private.DELETE("/posts/likes/:pid", posts.Unlike)        
 
         /* messaging routes */
 
