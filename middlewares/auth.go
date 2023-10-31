@@ -114,11 +114,7 @@ func PostAuthorization() gin.HandlerFunc {
 			c.Abort();
 			return;
 		}
-		defer res.Body.Close();
-		var is_author bool;
-		json.NewDecoder(res.Body).Decode(&is_author);
-		fmt.Printf("%s\n", is_author);
-		if (!is_author) {
+		if (res.StatusCode == http.StatusNotFound) {
 			c.JSON(http.StatusForbidden, gin.H{"status": "forbidden operation"});
 			c.Abort();
 			return;

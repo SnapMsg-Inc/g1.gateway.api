@@ -22,4 +22,10 @@ type PostCreate struct {
 	Private bool      `json:"is_private"`
 }
 
+type PostUpdate struct {
+	Text     string   `json:"text,omitempty" gorm:"size:300"`
+	Hashtags []string `json:"hashtags,omitempty"`
+	MediaURI []string `json:"media_uri,omitempty"`
+	Private bool      `json:"is_private,omitempty"`
+}
 

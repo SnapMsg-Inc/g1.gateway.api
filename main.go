@@ -11,7 +11,7 @@ import (
     posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
-    cors "github.com/rs/cors/wrapper/gin"
+//    cors "github.com/rs/cors/wrapper/gin"
 
 )
 
@@ -28,16 +28,16 @@ func main() {
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
     
-    /* cors middleware */
+    /* cors middleware 
     // router.Use(middlewares.CORS())
     cors_middleware := cors.New(cors.Options{
-        AllowedOrigins: []string{ "https://backoffice-backoffice-marioax.cloud.okteto.net" },
+        AllowedOrigins: []string{ "*" },
         AllowCredentials: true,
         AllowedMethods: []string{ "POST", "GET", "PATCH", "DELETE" },
         // Enable Debugging for testing, consider disabling in production
         Debug: true,
-    })
-    router.Use(cors_middleware)
+    })*/
+//    router.Use(cors_middleware)
     
 
     /* private routes */

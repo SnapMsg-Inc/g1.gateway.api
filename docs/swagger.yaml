@@ -37,6 +37,21 @@ definitions:
       text:
         type: string
     type: object
+  models.PostUpdate:
+    properties:
+      hashtags:
+        items:
+          type: string
+        type: array
+      is_private:
+        type: boolean
+      media_uri:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
   models.User:
     properties:
       alias:
@@ -284,30 +299,19 @@ paths:
         name: pid
         required: true
         type: string
-      - description: new text for the post
+      - description: data for update the post
         in: body
-        name: text
+        name: PostUpdate
+        required: true
         schema:
-          type: string
-      - description: new hashtags for the post
-        in: body
-        name: hashtags
-        schema:
-          items:
-            type: string
-          type: array
-      - description: new media uir's for the post
-        in: body
-        name: media_uri
-        schema:
-          items:
-            type: string
-          type: array
+          $ref: '#/definitions/models.PostUpdate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
+        "403":
+          description: Forbidden
       security:
       - Bearer: []
       summary: Update some fields of a post

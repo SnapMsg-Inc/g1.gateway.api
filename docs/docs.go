@@ -659,39 +659,21 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "new text for the post",
-                        "name": "text",
+                        "description": "data for update the post",
+                        "name": "PostUpdate",
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "new hashtags for the post",
-                        "name": "hashtags",
-                        "in": "body",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "description": "new media uir's for the post",
-                        "name": "media_uri",
-                        "in": "body",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/models.PostUpdate"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 }
             }
@@ -1138,6 +1120,29 @@ const docTemplate = `{
             }
         },
         "models.PostCreate": {
+            "type": "object",
+            "properties": {
+                "hashtags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_private": {
+                    "type": "boolean"
+                },
+                "media_uri": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PostUpdate": {
             "type": "object",
             "properties": {
                 "hashtags": {

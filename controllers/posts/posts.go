@@ -123,21 +123,20 @@ func Create(c *gin.Context) {
 // Update post godoc
 // @Summary Update some fields of a post
 // @Param pid path string true "post id to update"
-// @Param text body string false "new text for the post"
-// @Param hashtags body []string false "new hashtags for the post"
-// @Param media_uri body []string false "new media uir's for the post"
+// @Param PostUpdate body models.PostUpdate true "data for update the post" 
 // @Schemes
 // @Description
 // @Tags posts methods
 // @Accept json
 // @Produce json
 // @Success 200
+// @Failure 403  
 // @Router /posts/{pid} [patch]
 // @Security Bearer
 func Update(c *gin.Context) {
     pid := c.Param("pid");
 	url := fmt.Sprintf("%s/posts/%s", POSTS_URL, pid);
-    fmt.Printf("%s\n", url);
+    fmt.Printf("[url] %s [PID] %s\n", url, pid);
 	req, _ := http.NewRequest("PATCH", url, c.Request.Body);
 	client := &http.Client{};
 	res, err := client.Do(req);
