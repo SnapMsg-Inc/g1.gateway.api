@@ -203,13 +203,18 @@ func GetFeed(c *gin.Context) {
         return;
     }
 
-     // parse follows uid to http query format
+    if (!len(follows)) {
+        c.JSON(http.StatusOK, gin.H{"data" : []});
+        return;
+    }
+
+    // parse follows uid to http query format
     for _, follow := range follows {
         query += "&uid=" + follow.ID;
     }
+    url = fmt.Sprintf("%s/posts?%s&private=True&public=True", POSTS_URL, query);
 
     // fetch (private and public) posts of followed
-    url = fmt.Sprintf("%s/posts?%s&private=True&public=True", POSTS_URL, query);
     fmt.Printf("[URL] %s\n", url)
     res, err = http.Get(url);
 
