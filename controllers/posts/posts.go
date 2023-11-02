@@ -204,7 +204,7 @@ func GetFeed(c *gin.Context) {
     }
 
     if (!len(follows)) {
-        c.JSON(http.StatusOK, gin.H{"data" : []});
+        c.JSON(http.StatusOK, gin.H{"data" : []string{}});
         return;
     }
 
