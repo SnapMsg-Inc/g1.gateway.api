@@ -37,3 +37,12 @@ type UserPublic struct {
 	Picture   string   `json:"pic"`
 	Interests []string `json:"interests"`
 }
+
+type UserUpdate struct {
+	Alias	  string             `json:"alias,omitempty"`
+	Nick      string             `json:"nick,omitempty"`
+	Picture   string             `json:"pic,omitempty"`
+	Interests []string           `json:"interests,omitempty"`
+	Ocupation string             `json:"ocupation,omitempty"`
+	Zone      map[string]float32 `json:"zone,omitempty" example:"latitude:0.00,longitude:0.00"`
+}
