@@ -5,7 +5,7 @@ import (
 	"os"
 	//	"io/ioutil"
 	//	"bytes"
-	//	"encoding/json"
+    "encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -105,8 +105,17 @@ func Create(c *gin.Context) {
 
 	// forward request
 	//u_json, err := json.Marshal(&u);
-	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
-	res, err := http.Post(url, "application/json", c.Request.Body)
+    var user models.UserCreate;
+
+    if err := c.ShouldBindJSON(&user); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return;
+    }
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid);
+    var body bytes.Buffer;
+    json.NewEncoder(&body).Encode(user);
+
+	res, err := http.Post(url, "application/json", body);
 
 	if err != nil {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
