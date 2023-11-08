@@ -126,9 +126,7 @@ func Create(c *gin.Context) {
 
 // Update user godoc
 // @Summary Update current user data
-// @Param nick query string false "new nickname"
-// @Param interests query []string false "new interests"
-// @Param pic query string false "new profile picture"
+// @Param UserUpdate body models.UserUpdate true "data for update the user" 
 // @Description
 // @Tags users methods
 // @Accept json

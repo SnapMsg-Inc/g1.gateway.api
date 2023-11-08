@@ -203,7 +203,7 @@ func GetFeed(c *gin.Context) {
         return;
     }
 
-    if (!len(follows)) {
+    if (len(follows) == 0) {
         c.JSON(http.StatusOK, gin.H{"data" : []string{}});
         return;
     }
