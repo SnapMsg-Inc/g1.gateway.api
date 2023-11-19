@@ -137,6 +137,28 @@ definitions:
       uid:
         type: string
     type: object
+  models.UserUpdate:
+    properties:
+      alias:
+        type: string
+      interests:
+        items:
+          type: string
+        type: array
+      nick:
+        type: string
+      ocupation:
+        type: string
+      pic:
+        type: string
+      zone:
+        additionalProperties:
+          type: number
+        example:
+          latitude: 0
+          longitude: 0
+        type: object
+    type: object
 info:
   contact: {}
   title: SnapMsg API
@@ -731,21 +753,12 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: new nickname
-        in: query
-        name: nick
-        type: string
-      - collectionFormat: csv
-        description: new interests
-        in: query
-        items:
-          type: string
-        name: interests
-        type: array
-      - description: new profile picture
-        in: query
-        name: pic
-        type: string
+      - description: data for update the user
+        in: body
+        name: UserUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
       produces:
       - application/json
       responses:

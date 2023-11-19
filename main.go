@@ -2,6 +2,7 @@ package main
 
 import (
     //"net/http"
+    "fmt"
     docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
     gin "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -25,11 +26,13 @@ import (
 // @tag.name posts methods
 // @tag.name admin methods
 func main() {
+    fmt.Println("Starting SnapMsg API...")
+
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
     
-    /* cors middleware 
-    // router.Use(middlewares.CORS())
+/* cors middleware 
+    router.Use(middlewares.CORS())
     cors_middleware := cors.New(cors.Options{
         AllowedOrigins: []string{ "*" },
         AllowCredentials: true,
@@ -38,7 +41,7 @@ func main() {
         Debug: true,
     })*/
 //    router.Use(cors_middleware)
-    
+    router.Use(middlewares.CORS())
 
     /* private routes */
     private := router.Group("/")

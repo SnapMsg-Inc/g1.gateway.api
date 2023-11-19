@@ -843,26 +843,13 @@ const docTemplate = `{
                 "summary": "Update current user data",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "new nickname",
-                        "name": "nick",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "new interests",
-                        "name": "interests",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "new profile picture",
-                        "name": "pic",
-                        "in": "query"
+                        "description": "data for update the user",
+                        "name": "UserUpdate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserUpdate"
+                        }
                     }
                 ],
                 "responses": {
@@ -1289,6 +1276,39 @@ const docTemplate = `{
                 },
                 "uid": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserUpdate": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "type": "string"
+                },
+                "interests": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "nick": {
+                    "type": "string"
+                },
+                "ocupation": {
+                    "type": "string"
+                },
+                "pic": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    },
+                    "example": {
+                        "latitude": 0,
+                        "longitude": 0
+                    }
                 }
             }
         }
