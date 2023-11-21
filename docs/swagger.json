@@ -375,7 +375,7 @@
                 }
             }
         },
-        "/posts/like/{pid}": {
+        "/posts/likes/{pid}": {
             "get": {
                 "security": [
                     {
@@ -409,9 +409,7 @@
                         "description": "Not Found"
                     }
                 }
-            }
-        },
-        "/posts/likes/{pid}": {
+            },
             "post": {
                 "security": [
                     {

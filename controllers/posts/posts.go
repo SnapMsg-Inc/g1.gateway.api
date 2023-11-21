@@ -385,12 +385,14 @@ func Unfav(c *gin.Context) {
 // @Produce json
 // @Failure 404
 // @Success 200
-// @Router /posts/like/{pid} [get]
+// @Router /posts/likes/{pid} [get]
 // @Security Bearer
 func GetLike(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
     pid := c.Param("pid");
     url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);
+    fmt.Println("entre");
+    fmt.Println(url);
 
     res, err := http.Get(url);
     if err != nil {
@@ -399,3 +401,5 @@ func GetLike(c *gin.Context) {
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
+
+func 

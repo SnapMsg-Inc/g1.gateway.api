@@ -446,7 +446,26 @@ paths:
       summary: Get feed of the user making the request
       tags:
       - posts methods
-  /posts/like/{pid}:
+  /posts/likes/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unlike
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unlike a post
+      tags:
+      - posts methods
     get:
       consumes:
       - application/json
@@ -466,26 +485,6 @@ paths:
       security:
       - Bearer: []
       summary: Check if current user liked a given post
-      tags:
-      - posts methods
-  /posts/likes/{pid}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: post id to unlike
-        in: path
-        name: pid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: Unlike a post
       tags:
       - posts methods
     post:

@@ -384,7 +384,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/like/{pid}": {
+        "/posts/likes/{pid}": {
             "get": {
                 "security": [
                     {
@@ -418,9 +418,7 @@ const docTemplate = `{
                         "description": "Not Found"
                     }
                 }
-            }
-        },
-        "/posts/likes/{pid}": {
+            },
             "post": {
                 "security": [
                     {
