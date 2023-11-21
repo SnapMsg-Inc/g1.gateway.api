@@ -78,6 +78,7 @@ func main() {
         private.GET("/posts/recommended", posts.GetRecommended)
 
         private.GET("/posts/favs", posts.GetFavs)
+        private.GET("/posts/favs/:pid", posts.Favs)
         private.POST("/posts/favs/:pid", posts.Fav)
         private.DELETE("/posts/favs/:pid", posts.Unfav)
 

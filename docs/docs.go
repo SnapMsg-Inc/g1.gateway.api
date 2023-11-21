@@ -270,6 +270,40 @@ const docTemplate = `{
             }
         },
         "/posts/favs/{pid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Check if current user favs a given post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "pid to check fav",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {

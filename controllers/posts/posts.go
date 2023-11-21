@@ -402,4 +402,27 @@ func GetLike(c *gin.Context) {
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
-func 
+// Get Favs  godoc
+// @Summary Check if current user favs a given post
+// @Schemes
+// @Description
+// @Param pid path string true "pid to check fav"
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Failure 404
+// @Success 200
+// @Router /posts/favs/{pid} [get]
+// @Security Bearer
+func Favs(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/favs/%s", POSTS_URL, uid, pid);
+    res, err := http.Get(url);
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}

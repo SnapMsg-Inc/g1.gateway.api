@@ -393,6 +393,27 @@ paths:
       summary: Remove a post from user favs
       tags:
       - posts methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: pid to check fav
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if current user favs a given post
+      tags:
+      - posts methods
     post:
       consumes:
       - application/json
