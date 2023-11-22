@@ -426,3 +426,27 @@ func Favs(c *gin.Context) {
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
+
+// Get Trending Topics godoc
+// @Summary Get Trending Topic 
+// @Param limit query int true "limit" default(10) maximum(100) minimum(0)
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200 array models.Post
+// @Router /posts/TrendingTopics[get]
+// @Security Bearer
+func GetTrendingTopics(c *gin.Context) {
+    limit := c.Query("limit");
+    url := fmt.Sprintf("%s/posts/trendingTopics?%s", POSTS_URL, limit);
+    res, err := http.Get(url);
+    fmt.Println(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
+}
