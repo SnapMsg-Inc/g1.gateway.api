@@ -436,7 +436,7 @@ func Favs(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/TrendingTopics[get]
+// @Router /posts/TrendingTopics [get]
 // @Security Bearer
 func GetTrendingTopics(c *gin.Context) {
     limit := c.Query("limit");
