@@ -436,11 +436,11 @@ func Favs(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/TrendingTopics [get]
+// @Router /posts/trendings [get]
 // @Security Bearer
 func GetTrendingTopics(c *gin.Context) {
     limit := c.Query("limit");
-    url := fmt.Sprintf("%s/posts/trendingTopics?%s", POSTS_URL, limit);
+    url := fmt.Sprintf("%s/posts/trendings?%s", POSTS_URL, limit);
     res, err := http.Get(url);
     fmt.Println(url);
 
@@ -449,4 +449,96 @@ func GetTrendingTopics(c *gin.Context) {
         return;
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
+}
+
+// Delete snapshare godoc
+// @Summary Delete snapshare owned by current user
+// @Param pid path string true "snapshare id to delete"
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /posts/snapshares/{pid} [delete]
+// @Security Bearer
+func DeleteSnapshare(c *gin.Context) {
+	url := fmt.Sprintf("%s/snapshares/%s", POSTS_URL, c.Param("pid"));
+	req, _ := http.NewRequest("DELETE", url, nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// Get current Snapshares godoc
+// @Summary Get snapshares of current user
+// @Schemes
+// @Description
+// @Tags users methods
+// @Accept */*
+// @Produce json
+// @Success 200 {object} 
+// @Router /posts/snapshares/me [get]
+// @Security Bearer
+func GetSnapshares(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string)
+	url := fmt.Sprintf("%s/posts/%s/snapshares", USERS_URL, uid)
+	res, err := http.Get(url)
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// create snapshare godoc
+// @Summary create snapshare for current user
+// @Param pid path string true "post id to create snapshare"
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /posts/snapshare/{pid} [post]
+// @Security Bearer
+func CreateSnapshare(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/snapshares/%s", POSTS_URL, uid, pid);
+    res, err := http.Post(url, "application/json", nil);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+
+}
+
+// Check if a post is Snapshared godoc
+// @Summary Chek if a post is Snapshared
+// @Schemes
+// @Description
+// @Tags users methods
+// @Accept */*
+// @Produce json
+// @Success 200 {object}
+// @Router /posts/snapshares/{pid} [get]
+// @Security Bearer
+func IsSnapshared(c *gin.Context) {
+	uid := c.MustGet("FIREBASE_UID").(string)
+	url := fmt.Sprintf("%s/posts/%s/snapshares/%s", USERS_URL, uid, pid)
+	res, err := http.Get(url)
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
