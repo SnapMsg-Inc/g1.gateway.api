@@ -542,7 +542,7 @@ func CreateSnapshare(c *gin.Context) {
 // @Param pid path string true "Post ID"
 // @Success 200 
 // @Failure 404 
-// @Router /posts/snapshares/:pid [get]
+// @Router /posts/snapshares/{pid} [get]
 // @Security Bearer
 func IsSnapshared(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
