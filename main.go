@@ -87,7 +87,7 @@ func main() {
         private.POST("/posts/likes/:pid", posts.Like)
         private.DELETE("/posts/likes/:pid", posts.Unlike)        
 
-        private.GET("/posts/snapshares/me", posts.GetSnapshares)
+        private.GET("/posts/me/snapshares", posts.GetSnapshares)
         private.GET("/posts/snapshares/:pid", posts.IsSnapshared)
         private.DELETE("/posts/snapshares/:pid", posts.DeleteSnapshare)
         private.POST("/posts/snapshares/:pid", posts.CreateSnapshare)
