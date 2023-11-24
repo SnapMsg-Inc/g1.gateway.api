@@ -17,15 +17,15 @@ type User struct {
 }
 
 type UserCreate struct {
-	Email     string             `json:"email"`
-	FullName  string             `json:"fullname"`
-	Birthdate string             `json:"birthdate" example:"YYYY-MM-DD"`
-	Alias	  string             `json:"alias"`
-	Nick      string             `json:"nick"`
-	Picture   string             `json:"pic"`
-	Interests []string           `json:"interests"`
-	Ocupation string             `json:"ocupation,omitempty"`
-	Zone      map[string]float32 `json:"zone,omitempty" example:"latitude:0.00,longitude:0.00"`
+	Email     string             `json:"email" binding:"required"`
+	FullName  string             `json:"fullname" binding:"required"`
+	Birthdate string             `json:"birthdate" example:"YYYY-MM-DD" binding:"required"`
+	Alias	  string             `json:"alias" binding:"required"`
+	Nick      string             `json:"nick" binding:"required"`
+	Picture   string             `json:"pic" binding:"required"`
+	Interests []string           `json:"interests" binding:"required"`
+	Ocupation string             `json:"ocupation,omitempty" binding:"required"`
+	Zone      map[string]float32 `json:"zone,omitempty" example:"latitude:0.00,longitude:0.00" binding:"required"`
 }
 
 type UserPublic struct {

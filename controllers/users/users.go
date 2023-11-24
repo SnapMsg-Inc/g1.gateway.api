@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 	//	"io/ioutil"
-	//	"bytes"
+	"bytes"
     "encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	// models "github.com/SnapMsg-Inc/g1.gateway.api/models"
+	models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	// middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
@@ -22,8 +22,8 @@ var USERS_URL = os.Getenv("USERS_URL")
 // @Param uid query string false "user id"
 // @Param email query string false "user email"
 // @Param nick query string false "user nickname"
-// @Param limit query int true "max results"
-// @Param page query int true "page number"
+// @Param limit query int true "max results" default(100) maximum(100) minimum(0)
+// @Param page query int true "page number" default(0) minimum(0)
 // @Tags users methods
 // @x-order "1"
 // @Accept */*
@@ -69,6 +69,8 @@ func GetMe(c *gin.Context) {
 // @Summary Recommend users for the user making the request
 // @Schemes
 // @Description
+// @Param limit query int true "max results" default(100) maximum(100) minimum(0)
+// @Param page query int true "page number" default(0) minimum(0)
 // @Tags users methods
 // @x-order "2"
 // @Accept json
@@ -111,11 +113,12 @@ func Create(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return;
     }
+    fmt.Printf("[UserCreate] %s\b", user);
 	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid);
     var body bytes.Buffer;
     json.NewEncoder(&body).Encode(user);
 
-	res, err := http.Post(url, "application/json", body);
+	res, err := http.Post(url, "application/json", &body);
 
 	if err != nil {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
