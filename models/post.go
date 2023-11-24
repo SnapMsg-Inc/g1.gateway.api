@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Post struct {
-	ID        uint      `json:"pid" gorm:"primary_key"`
+	ID        string    `json:"pid" gorm:"primary_key"`
 	UID       string    `json:"uid"`
 	Timestamp time.Time `json:"timestamp"`
 	Hashtags  []string  `json:"hashtags"`
@@ -28,5 +28,9 @@ type PostUpdate struct {
 }
 
 type PostQuery struct {
-	nickname string `json:"nickname"`
+	Nick string `json:"nick,omitempty"`
+	Text string   `json:"text,omitempty" gorm:"size:300"`
+	Hashtags []string `json:"hashtags,omitempty"`
+    Limit uint `json:"limit,default=100" binding:"required,min=0,max=100"` 
+    Page uint `json:"page,default=0" binding:"required,min=0"` 
 }

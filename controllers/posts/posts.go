@@ -35,8 +35,38 @@ func Get(c *gin.Context) {
     // bindear la query a un struct (modelo PostQuery)
     // convertir nick a uid con el ms de users
     // enviar la request al ms de posts
-    path_query := c.Request.URL.RequestURI();
-    url := fmt.Sprintf("%s%s", POSTS_URL, path_query);
+    var query models.PostQuery;
+    bind_err := c.ShouldBindQuery(&query);
+    
+    if bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
+    nick := c.Query("nick");
+    // fetch user's uid 
+    fmt.Printf("[INFO] %s\n", nick);
+
+    if nick != "" {
+        url := fmt.Sprintf("%s/users?nick=%s", USERS_URL, nick);
+        fmt.Printf("[INFO] %s\n", url);
+        res, err := http.Get(url);
+    
+        if (err != nil) {
+            c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+            return;
+        }
+        var user []models.UserPublic;
+        defer res.Body.Close();
+        err = json.NewDecoder(res.Body).Decode(&user);
+        
+        if (err != nil) {
+            c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse body" });
+            return;
+        }
+        path_query += "&uid=" + user[0].ID;
+    }
+    url := fmt.Sprintf("%s/posts?%s", POSTS_URL, path_query);
+    fmt.Printf("[INFO] %s\n", url);
     res, err := http.Get(url);
 
     if (err != nil) {
@@ -87,24 +117,7 @@ func GetMe(c *gin.Context) {
 // @Security Bearer
 func Create(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string)
-
-    // fetch user's nickname
-    url := fmt.Sprintf("%s/users?uid=%s", USERS_URL, uid);
-    res, err := http.Get(url);
-    
-    if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
-        return;
-    }
-    defer res.Body.Close();
-    var user []models.UserPublic;
-    err = json.NewDecoder(res.Body).Decode(&user);
-    
-    if (err != nil) {
-        c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse body" });
-        return;
-    }
-    
+   
     // set PostCreate data
     var post models.PostCreate;
     c.ShouldBindJSON(&post);
@@ -114,8 +127,9 @@ func Create(c *gin.Context) {
     var body bytes.Buffer;
     json.NewEncoder(&body).Encode(post);
     
-    url = fmt.Sprintf("%s/posts", POSTS_URL);
-    res, err = http.Post(url, "application/json", &body);
+    url := fmt.Sprintf("%s/posts", POSTS_URL);
+    res, err := http.Post(url, "application/json", &body);
+
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;

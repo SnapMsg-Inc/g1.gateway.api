@@ -583,6 +583,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/me/snapshares": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves the snapshares associated with the current authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get snapshares of current user",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit of snapshares to retrieve",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/posts/recommended": {
             "get": {
                 "security": [
@@ -634,7 +678,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/snapshares/:pid": {
+        "/posts/snapshares/{pid}": {
             "get": {
                 "security": [
                     {
@@ -669,53 +713,7 @@ const docTemplate = `{
                         "description": "Not Found"
                     }
                 }
-            }
-        },
-        "/posts/snapshares/me": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieves the snapshares associated with the current authenticated user.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts methods"
-                ],
-                "summary": "Get snapshares of current user",
-                "parameters": [
-                    {
-                        "maximum": 100,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 100,
-                        "description": "Limit of snapshares to retrieve",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Page number for pagination",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/posts/snapshares/{pid}": {
+            },
             "post": {
                 "security": [
                     {
@@ -737,37 +735,6 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Post ID",
-                        "name": "pid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts methods"
-                ],
-                "summary": "Delete snapshare owned by current user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "snapshare id to delete",
                         "name": "pid",
                         "in": "path",
                         "required": true
@@ -852,6 +819,39 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/posts/{pid}/snapshares": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Delete snapshare owned by current user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "snapshare id to delete",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -944,14 +944,19 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 0,
                         "type": "integer",
+                        "default": 100,
                         "description": "max results",
                         "name": "limit",
                         "in": "query",
                         "required": true
                     },
                     {
+                        "minimum": 0,
                         "type": "integer",
+                        "default": 0,
                         "description": "page number",
                         "name": "page",
                         "in": "query",
@@ -1169,6 +1174,27 @@ const docTemplate = `{
                     "users methods"
                 ],
                 "summary": "Recommend users for the user making the request",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "max results",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1319,7 +1345,7 @@ const docTemplate = `{
                     }
                 },
                 "pid": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "text": {
                     "type": "string"
