@@ -270,6 +270,40 @@ const docTemplate = `{
             }
         },
         "/posts/favs/{pid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Check if current user favs a given post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "pid to check fav",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -384,7 +418,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/like/{pid}": {
+        "/posts/likes/{pid}": {
             "get": {
                 "security": [
                     {
@@ -418,9 +452,7 @@ const docTemplate = `{
                         "description": "Not Found"
                     }
                 }
-            }
-        },
-        "/posts/likes/{pid}": {
+            },
             "post": {
                 "security": [
                     {
@@ -602,6 +634,152 @@ const docTemplate = `{
                 }
             }
         },
+        "/posts/snapshares/:pid": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Checks if the current authenticated user has snapshared a specific post.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Check if a post is snapshared by current user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/posts/snapshares/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves the snapshares associated with the current authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get snapshares of current user",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit of snapshares to retrieve",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/posts/snapshares/{pid}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a new snapshare for a given post by the current user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Create a snapshare",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Delete snapshare owned by current user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "snapshare id to delete",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/posts/{pid}": {
             "delete": {
                 "security": [
@@ -674,6 +852,57 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/trendings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves a list of trending topics.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get Trending Topics",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit of topics to retrieve",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Post"
+                            }
+                        }
                     }
                 }
             }
@@ -1088,9 +1317,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                },
-                "nick": {
-                    "type": "string"
                 },
                 "pid": {
                     "type": "integer"

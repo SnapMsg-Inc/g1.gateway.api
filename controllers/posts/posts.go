@@ -32,6 +32,9 @@ var POSTS_URL = os.Getenv("POSTS_URL")
 // @Router /posts [get]
 // @Security Bearer
 func Get(c *gin.Context) {
+    // bindear la query a un struct (modelo PostQuery)
+    // convertir nick a uid con el ms de users
+    // enviar la request al ms de posts
     path_query := c.Request.URL.RequestURI();
     url := fmt.Sprintf("%s%s", POSTS_URL, path_query);
     res, err := http.Get(url);
@@ -106,7 +109,7 @@ func Create(c *gin.Context) {
     var post models.PostCreate;
     c.ShouldBindJSON(&post);
     post.UID = uid;
-    post.Nick = user[0].Nick;
+    // post.Nick = user[0].Nick;
     
     var body bytes.Buffer;
     json.NewEncoder(&body).Encode(post);
@@ -385,16 +388,177 @@ func Unfav(c *gin.Context) {
 // @Produce json
 // @Failure 404
 // @Success 200
-// @Router /posts/like/{pid} [get]
+// @Router /posts/likes/{pid} [get]
 // @Security Bearer
 func GetLike(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
     pid := c.Param("pid");
     url := fmt.Sprintf("%s/posts/%s/likes/%s", POSTS_URL, uid, pid);
+    fmt.Println("entre");
+    fmt.Println(url);
 
     res, err := http.Get(url);
     if err != nil {
         c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// Get Favs  godoc
+// @Summary Check if current user favs a given post
+// @Schemes
+// @Description
+// @Param pid path string true "pid to check fav"
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Failure 404
+// @Success 200
+// @Router /posts/favs/{pid} [get]
+// @Security Bearer
+func Favs(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string);
+    pid := c.Param("pid");
+    url := fmt.Sprintf("%s/posts/%s/favs/%s", POSTS_URL, uid, pid);
+    res, err := http.Get(url);
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// Get Trending Topics godoc
+// @Summary Get Trending Topics
+// @Description Retrieves a list of trending topics.
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Param limit query int true "Limit of topics to retrieve" default(10) maximum(100) minimum(0)
+// @Param page query int false "Page number for pagination" default(0) minimum(0)
+// @Success 200 {array} models.Post
+// @Router /trendings [get]
+// @Security Bearer
+func GetTrendingTopics(c *gin.Context) {
+    limit := c.DefaultQuery("limit", "100")
+    page := c.DefaultQuery("page", "0")
+
+    url := fmt.Sprintf("%s/trendings?limit=%s&page=%s", POSTS_URL, limit, page)
+    res, err := http.Get(url)
+        fmt.Println("URL de la petición:", url)
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+
+// Delete snapshare godoc
+// @Summary Delete snapshare owned by current user
+// @Param pid path string true "snapshare id to delete"
+// @Schemes
+// @Description
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /posts/snapshares/{pid} [delete]
+// @Security Bearer
+func DeleteSnapshare(c *gin.Context) {
+	url := fmt.Sprintf("%s/posts/snapshares/%s", POSTS_URL, c.Param("pid"));
+	req, _ := http.NewRequest("DELETE", url, nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// GetSnapshares godoc
+// @Summary Get snapshares of current user
+// @Description Retrieves the snapshares associated with the current authenticated user.
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Param limit query int false "Limit of snapshares to retrieve" default(100) maximum(100) minimum(0)
+// @Param page query int false "Page number for pagination" default(0) minimum(0)
+// @Success 200
+// @Router /posts/snapshares/me [get]
+// @Security Bearer
+func GetSnapshares(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string)
+
+    limit := c.DefaultQuery("limit", "100")
+    page := c.DefaultQuery("page", "0")
+
+    url := fmt.Sprintf("%s/posts/%s/snapshares?limit=%s&page=%s", POSTS_URL, uid, limit, page)
+    res, err := http.Get(url)
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// CreateSnapshare godoc
+// @Summary Create a snapshare
+// @Description Creates a new snapshare for a given post by the current user.
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Param pid path string true "Post ID"
+// @Success 200 
+// @Router /posts/snapshares/{pid} [post]
+// @Security Bearer
+func CreateSnapshare(c *gin.Context) {
+    pid := c.Param("pid")
+    uid := c.MustGet("FIREBASE_UID").(string)
+
+    url := fmt.Sprintf("%s/posts/%s/snapshares/%s", POSTS_URL, uid, pid)
+
+    res, err := http.Post(url, "application/json", nil)
+
+    if err != nil {
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+        return
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// IsSnapshared godoc
+// @Summary Check if a post is snapshared by current user
+// @Description Checks if the current authenticated user has snapshared a specific post.
+// @Tags posts methods
+// @Accept json
+// @Produce json
+// @Param pid path string true "Post ID"
+// @Success 200 
+// @Failure 404 
+// @Router /posts/snapshares/{pid} [get]
+// @Security Bearer
+func IsSnapshared(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string)
+    pid := c.Param("pid")
+
+    url := fmt.Sprintf("%s/posts/%s/snapshares/%s", POSTS_URL, uid, pid)
+
+    res, err := http.Get(url)
+
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    if res.StatusCode == http.StatusNotFound {
+        c.JSON(http.StatusNotFound, gin.H{"error": "not snapshared"})
         return
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)

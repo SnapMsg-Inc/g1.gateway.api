@@ -2,6 +2,7 @@ package main
 
 import (
     //"net/http"
+    "fmt"
     docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
     gin "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -25,11 +26,13 @@ import (
 // @tag.name posts methods
 // @tag.name admin methods
 func main() {
+    fmt.Println("Starting SnapMsg API...")
+
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
     
-    /* cors middleware 
-    // router.Use(middlewares.CORS())
+/* cors middleware 
+    router.Use(middlewares.CORS())
     cors_middleware := cors.New(cors.Options{
         AllowedOrigins: []string{ "*" },
         AllowCredentials: true,
@@ -38,7 +41,7 @@ func main() {
         Debug: true,
     })*/
 //    router.Use(cors_middleware)
-    
+    router.Use(middlewares.CORS())
 
     /* private routes */
     private := router.Group("/")
@@ -73,14 +76,21 @@ func main() {
 
         private.GET("/posts/feed", posts.GetFeed)
         private.GET("/posts/recommended", posts.GetRecommended)
+        private.GET("/trendings", posts.GetTrendingTopics)
 
         private.GET("/posts/favs", posts.GetFavs)
+        private.GET("/posts/favs/:pid", posts.Favs)
         private.POST("/posts/favs/:pid", posts.Fav)
         private.DELETE("/posts/favs/:pid", posts.Unfav)
 
         private.GET("/posts/likes/:pid", posts.GetLike)
         private.POST("/posts/likes/:pid", posts.Like)
         private.DELETE("/posts/likes/:pid", posts.Unlike)        
+
+        private.GET("/posts/snapshares/me", posts.GetSnapshares)
+        private.GET("/posts/snapshares/:pid", posts.IsSnapshared)
+        private.DELETE("/posts/snapshares/:pid", posts.DeleteSnapshare)
+        private.POST("/posts/snapshares/:pid", posts.CreateSnapshare)
 
         /* messaging routes */
 

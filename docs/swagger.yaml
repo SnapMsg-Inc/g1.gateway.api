@@ -11,8 +11,6 @@ definitions:
         items:
           type: string
         type: array
-      nick:
-        type: string
       pid:
         type: integer
       text:
@@ -403,6 +401,27 @@ paths:
       summary: Remove a post from user favs
       tags:
       - posts methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: pid to check fav
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if current user favs a given post
+      tags:
+      - posts methods
     post:
       consumes:
       - application/json
@@ -456,7 +475,26 @@ paths:
       summary: Get feed of the user making the request
       tags:
       - posts methods
-  /posts/like/{pid}:
+  /posts/likes/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unlike
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unlike a post
+      tags:
+      - posts methods
     get:
       consumes:
       - application/json
@@ -476,26 +514,6 @@ paths:
       security:
       - Bearer: []
       summary: Check if current user liked a given post
-      tags:
-      - posts methods
-  /posts/likes/{pid}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: post id to unlike
-        in: path
-        name: pid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: Unlike a post
       tags:
       - posts methods
     post:
@@ -594,6 +612,134 @@ paths:
       security:
       - Bearer: []
       summary: Get recommended posts for a user
+      tags:
+      - posts methods
+  /posts/snapshares/:pid:
+    get:
+      consumes:
+      - application/json
+      description: Checks if the current authenticated user has snapshared a specific
+        post.
+      parameters:
+      - description: Post ID
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if a post is snapshared by current user
+      tags:
+      - posts methods
+  /posts/snapshares/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: snapshare id to delete
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Delete snapshare owned by current user
+      tags:
+      - posts methods
+    post:
+      consumes:
+      - application/json
+      description: Creates a new snapshare for a given post by the current user.
+      parameters:
+      - description: Post ID
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Create a snapshare
+      tags:
+      - posts methods
+  /posts/snapshares/me:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the snapshares associated with the current authenticated
+        user.
+      parameters:
+      - default: 100
+        description: Limit of snapshares to retrieve
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        type: integer
+      - default: 0
+        description: Page number for pagination
+        in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get snapshares of current user
+      tags:
+      - posts methods
+  /trendings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of trending topics.
+      parameters:
+      - default: 10
+        description: Limit of topics to retrieve
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: Page number for pagination
+        in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get Trending Topics
       tags:
       - posts methods
   /users:
