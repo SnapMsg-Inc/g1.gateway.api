@@ -469,7 +469,7 @@ func GetTrendingTopics(c *gin.Context) {
 // @Router /posts/snapshares/{pid} [delete]
 // @Security Bearer
 func DeleteSnapshare(c *gin.Context) {
-	url := fmt.Sprintf("%s/snapshares/%s", POSTS_URL, c.Param("pid"));
+	url := fmt.Sprintf("%s/posts/snapshares/%s", POSTS_URL, c.Param("pid"));
 	req, _ := http.NewRequest("DELETE", url, nil)
 	client := &http.Client{}
 	res, err := client.Do(req)
