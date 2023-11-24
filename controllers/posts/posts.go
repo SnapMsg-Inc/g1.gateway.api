@@ -466,10 +466,11 @@ func GetTrendingTopics(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /posts/snapshares/{pid} [delete]
+// @Router /posts/{pid}/snapshares [delete]
 // @Security Bearer
 func DeleteSnapshare(c *gin.Context) {
-	url := fmt.Sprintf("%s/posts/snapshares/%s", POSTS_URL, c.Param("pid"));
+    uid := c.MustGet("FIREBASE_UID").(string);
+	url := fmt.Sprintf("%s/posts/%s/snapshares/%s", POSTS_URL, uid, c.Param("pid"));
 	req, _ := http.NewRequest("DELETE", url, nil)
 	client := &http.Client{}
 	res, err := client.Do(req)
@@ -490,7 +491,7 @@ func DeleteSnapshare(c *gin.Context) {
 // @Param limit query int false "Limit of snapshares to retrieve" default(100) maximum(100) minimum(0)
 // @Param page query int false "Page number for pagination" default(0) minimum(0)
 // @Success 200
-// @Router /posts/snapshares/me [get]
+// @Router /posts/me/snapshares [get]
 // @Security Bearer
 func GetSnapshares(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
