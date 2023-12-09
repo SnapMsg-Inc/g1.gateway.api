@@ -1,4 +1,13 @@
 definitions:
+  models.MessageNotification:
+    properties:
+      message_content:
+        type: string
+      receiver_id:
+        type: string
+      sender_alias:
+        type: string
+    type: object
   models.Post:
     properties:
       hashtags:
@@ -48,6 +57,13 @@ definitions:
           type: string
         type: array
       text:
+        type: string
+    type: object
+  models.TokenData:
+    properties:
+      token:
+        type: string
+      user_id:
         type: string
     type: object
   models.User:
@@ -231,6 +247,53 @@ paths:
       summary: Create an admin user giving existing user
       tags:
       - admin methods
+  /messages/notify-message:
+    post:
+      consumes:
+      - application/json
+      description: send a message notification
+      parameters:
+      - description: Message Notification Data
+        in: body
+        name: message_notification
+        required: true
+        schema:
+          $ref: '#/definitions/models.MessageNotification'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Send a message notification
+      tags:
+      - messages methods
+  /messages/register-token:
+    post:
+      consumes:
+      - application/json
+      description: register a new notification token
+      parameters:
+      - description: Token Data
+        in: body
+        name: token_data
+        required: true
+        schema:
+          $ref: '#/definitions/models.TokenData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Register a new notification token
+      tags:
+      - messages methods
   /posts:
     get:
       consumes:

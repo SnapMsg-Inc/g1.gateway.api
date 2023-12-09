@@ -11,6 +11,7 @@ import (
     admin "github.com/SnapMsg-Inc/g1.gateway.api/controllers/admin"
     posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
+    messages "github.com/SnapMsg-Inc/g1.gateway.api/controllers/messages"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 //    cors "github.com/rs/cors/wrapper/gin"
 
@@ -93,7 +94,8 @@ func main() {
         private.POST("/posts/snapshares/:pid", posts.CreateSnapshare)
 
         /* messaging routes */
-
+        private.POST("/messages/register-token", messages.RegisterToken)
+        private.POST("/messages/notify-message", messages.NotifyMessage)
 
         /* admin routes (must authorize) */
         admin_group := private.Group("/admin")
