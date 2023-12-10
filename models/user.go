@@ -46,3 +46,4 @@ type UserUpdate struct {
 	Ocupation string             `json:"ocupation,omitempty"`
 	Zone      map[string]float32 `json:"zone,omitempty" example:"latitude:0.00,longitude:0.00"`
 }
+

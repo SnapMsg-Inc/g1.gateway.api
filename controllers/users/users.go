@@ -140,7 +140,17 @@ func Create(c *gin.Context) {
 func Update(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string)
 	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
-	req, _ := http.NewRequest("PATCH", url, c.Request.Body)
+
+    var data models.UserUpdate;
+    bind_err := c.ShouldBindJSON(&data);
+    
+    if bind_err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
+    }
+    var body bytes.Buffer;
+    json.NewEncoder(&body).Encode(data);
+
+	req, _ := http.NewRequest("PATCH", url, &body)
 	client := &http.Client{}
 	res, err := client.Do(req)
 

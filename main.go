@@ -101,9 +101,13 @@ func main() {
         admin_group := private.Group("/admin")
         admin_group.Use(middlewares.AdminAuthorization())
         {
-            admin_group.PUT("/users/:uid", admin.Create)
-            admin_group.DELETE("/users/:uid", admin.DeleteUser)
-            admin_group.DELETE("/posts/:pid", admin.DeletePost)
+            admin_group.POST("/users/:uid", admin.Create)
+            admin_group.DELETE("/users/:uid", admin.Delete)
+            admin_group.POST("/users/:uid/block", admin.BlockUser)
+            admin_group.DELETE("/users/:uid/block", admin.UnblockUser)
+            admin_group.POST("/posts/:pid/block", admin.BlockPost)
+            admin_group.DELETE("/posts/:pid/block", admin.UnblockPost)
+            admin_group.GET("/posts", admin.GetPosts)
         }
     }
 

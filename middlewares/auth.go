@@ -90,10 +90,10 @@ func AdminAuthorization() gin.HandlerFunc {
 			return;
 		}
 		defer res.Body.Close();
-		var users []models.User;
-		json.NewDecoder(res.Body).Decode(&users);
+		var user models.User;
+		json.NewDecoder(res.Body).Decode(&user);
 
-		if (len(users) == 0 || users[0].IsAdmin == false) {
+		if (user.IsAdmin == false) {
 			c.JSON(http.StatusForbidden, gin.H{"status": "forbidden operation"});
 			c.Abort();
 			return;

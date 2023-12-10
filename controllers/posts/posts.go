@@ -64,11 +64,12 @@ func Get(c *gin.Context) {
 func GetMe(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string)
     var query models.PostQuery;
-    
-    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    bind_err := c.ShouldBindQuery(&query);
+
+    if bind_err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
     }
-    url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true", POSTS_URL, uid, query.String());
+    url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true&blocked=true", POSTS_URL, uid, query.String());
     fmt.Printf("[url] %s\n", url);
     res, err := http.Get(url);
 
@@ -95,7 +96,11 @@ func Create(c *gin.Context) {
    
     // set PostCreate data
     var post models.PostCreate;
-    c.ShouldBindJSON(&post);
+    bind_err := c.ShouldBindJSON(&post);
+    
+    if bind_err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
+    }
     post.UID = uid;
     // post.Nick = user[0].Nick;
     
@@ -129,7 +134,17 @@ func Update(c *gin.Context) {
     pid := c.Param("pid");
 	url := fmt.Sprintf("%s/posts/%s", POSTS_URL, pid);
     fmt.Printf("[url] %s [PID] %s\n", url, pid);
-	req, _ := http.NewRequest("PATCH", url, c.Request.Body);
+
+    var post_update models.PostUpdate;
+    bind_err := c.ShouldBindJSON(&post_update);
+    
+    if bind_err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
+    }
+    var body bytes.Buffer;
+    json.NewEncoder(&body).Encode(post_update);
+
+	req, _ := http.NewRequest("PATCH", url, &body);
 	client := &http.Client{};
 	res, err := client.Do(req);
 
