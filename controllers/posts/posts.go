@@ -36,7 +36,7 @@ func Get(c *gin.Context) {
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
     }
-    url := fmt.Sprintf("%s/posts?%s", POSTS_URL, query.String());
+    url := fmt.Sprintf("%s/posts?private=false&public=true&%s", POSTS_URL, query.String());
     fmt.Printf("[INFO] %s\n", url);
     res, err := http.Get(url);
 

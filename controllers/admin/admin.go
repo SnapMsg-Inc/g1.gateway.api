@@ -5,9 +5,11 @@ import (
     "fmt"
     "strings"
 	"net/http"
+    "encoding/json"
 
 	gin "github.com/gin-gonic/gin"
-	_ "github.com/SnapMsg-Inc/g1.gateway.api/models"
+	models "github.com/SnapMsg-Inc/g1.gateway.api/models"
+    
 )
 
 var USERS_URL = os.Getenv("USERS_URL");
@@ -34,7 +36,7 @@ func patchField(url string, k string, v any) (*http.Response, error) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /admin/users/{uid} [post]
+// @Router /admin/{uid} [post]
 // @Security Bearer
 func Create(c *gin.Context) {
 	uid := c.Param("uid");
@@ -49,6 +51,43 @@ func Create(c *gin.Context) {
 }
 
 
+// Get admin godoc
+// @Summary Check if user is admin 
+// @Param uid path string true "user id"
+// @Schemes
+// @Description
+// @Tags admin methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Failure 404
+// @Router /admin/{uid} [get]
+// @Security Bearer
+func Get(c *gin.Context) {
+    uid := c.Param("uid");
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid);
+    res, err := http.Get(url);
+
+	if (err != nil) {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()});
+		return;
+	}
+    var user models.User;
+    err = json.NewDecoder(res.Body).Decode(&user);
+    
+    if (err != nil) {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot parse body"});
+        return;
+    }
+    
+    if (!user.IsAdmin) {
+        c.JSON(http.StatusNotFound, gin.H{"message": "admin does not exist"});
+        return;
+    }
+    c.JSON(http.StatusOK, gin.H{"message": "admin exist"});
+}
+
+
 // Delete admin user godoc
 // @Summary Remove admin status from existing user
 // @Param uid path string true "user id of the admin"
@@ -58,7 +97,7 @@ func Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /admin/users/{uid} [delete]
+// @Router /admin/{uid} [delete]
 // @Security Bearer
 func Delete(c *gin.Context) {
 	uid := c.Param("uid");
@@ -70,6 +109,30 @@ func Delete(c *gin.Context) {
 		return
 	}
     c.JSON(res.StatusCode, gin.H{"message": "admin deleted"})
+}
+
+
+// Get user godoc
+// @Summary Get specific user 
+// @Param uid path string true "user id"
+// @Schemes
+// @Description
+// @Tags admin methods
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /admin/users/{uid} [get]
+// @Security Bearer
+func GetUser(c *gin.Context) {
+    uid := c.Param("uid");
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
+    res, err := http.Get(url);
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}   
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
 
@@ -105,18 +168,37 @@ func UnblockUser(c *gin.Context) {
 }
 
 
+    
 // Get any posts godoc
 // @Summary Get all posts filtered by query 
+// @Param hashtags query []string false "hashtags" collectionFormat(multi)
+// @Param nick query string false "author's nickname"
+// @Param text query string false "text to match"
+// @Param limit query int true "limit" default(100) maximum(100) minimum(0)
+// @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
-// @Tags admin methods
+// @Tags posts methods
 // @Accept json
 // @Produce json
-// @Success 200
+// @Success 200 array models.Post
 // @Router /admin/posts [get]
 // @Security Bearer
 func GetPosts(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
+    var query models.PostQuery;
+    
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    url := fmt.Sprintf("%s/posts?private=true&public=true&blocked=true%s", POSTS_URL, query.String());
+    fmt.Printf("[INFO] %s\n", url);
+    res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
 
