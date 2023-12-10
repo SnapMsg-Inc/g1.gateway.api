@@ -4,7 +4,6 @@ import (
     "fmt"
     "os"
     "bytes"
-    "strings"
 	"net/http"
     "encoding/json"
     
@@ -18,7 +17,7 @@ var POSTS_URL = os.Getenv("POSTS_URL")
 
 // Get posts godoc
 // @Summary Get posts filtering by query
-// @Param hashtags query []string false "hashtags"
+// @Param hashtags query []string false "hashtags" collectionFormat(multi)
 // @Param nick query string false "author's nickname"
 // @Param text query string false "text to match"
 // @Param limit query int true "limit" default(100) maximum(100) minimum(0)
@@ -32,40 +31,12 @@ var POSTS_URL = os.Getenv("POSTS_URL")
 // @Router /posts [get]
 // @Security Bearer
 func Get(c *gin.Context) {
-    // bindear la query a un struct (modelo PostQuery)
-    // convertir nick a uid con el ms de users
-    // enviar la request al ms de posts
     var query models.PostQuery;
-    bind_err := c.ShouldBindQuery(&query);
     
-    if bind_err != nil {
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
     }
-    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    nick := c.Query("nick");
-    // fetch user's uid 
-    fmt.Printf("[INFO] %s\n", nick);
-
-    if nick != "" {
-        url := fmt.Sprintf("%s/users?nick=%s", USERS_URL, nick);
-        fmt.Printf("[INFO] %s\n", url);
-        res, err := http.Get(url);
-    
-        if (err != nil) {
-            c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
-            return;
-        }
-        var user []models.UserPublic;
-        defer res.Body.Close();
-        err = json.NewDecoder(res.Body).Decode(&user);
-        
-        if (err != nil) {
-            c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse body" });
-            return;
-        }
-        path_query += "&uid=" + user[0].ID;
-    }
-    url := fmt.Sprintf("%s/posts?%s", POSTS_URL, path_query);
+    url := fmt.Sprintf("%s/posts?%s", POSTS_URL, query.String());
     fmt.Printf("[INFO] %s\n", url);
     res, err := http.Get(url);
 
@@ -78,7 +49,7 @@ func Get(c *gin.Context) {
 
 // Get posts of current user (public and privates) godoc
 // @Summary Get posts filtering by query
-// @Param hashtags query []string false "hashtags"
+// @Param hashtags query []string false "hashtags" collectionFormat(multi)
 // @Param text query string false "text to match"
 // @Param limit query int true "limit" default(100) maximum(100) minimum(0)
 // @Param page query int true "page" default(0) minimum(0)
@@ -92,8 +63,12 @@ func Get(c *gin.Context) {
 // @Security Bearer
 func GetMe(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string)
-    query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true", POSTS_URL, uid, query);
+    var query models.PostQuery;
+    
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true", POSTS_URL, uid, query.String());
     fmt.Printf("[url] %s\n", url);
     res, err := http.Get(url);
 
@@ -203,7 +178,6 @@ func Delete(c *gin.Context) {
 // @Security Bearer
 func GetFeed(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
-    query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
 
     // fetch follows list
     url := fmt.Sprintf("%s/users/%s/follows", USERS_URL, uid);
@@ -224,12 +198,18 @@ func GetFeed(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{"data" : []string{}});
         return;
     }
+    var query models.PostQuery;
+    
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    qstr := query.String();
 
     // parse follows uid to http query format
     for _, follow := range follows {
-        query += "&uid=" + follow.ID;
+        qstr += "&uid=" + follow.ID;
     }
-    url = fmt.Sprintf("%s/posts?%s&private=True&public=True", POSTS_URL, query);
+    url = fmt.Sprintf("%s/posts?%s&private=True&public=True", POSTS_URL, qstr);
 
     // fetch (private and public) posts of followed
     fmt.Printf("[URL] %s\n", url)
@@ -256,8 +236,12 @@ func GetFeed(c *gin.Context) {
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
-    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, path_query);
+    var query models.PostQuery;
+    
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, query.String());
     res, err := http.Get(url);
 
     if (err != nil) {
@@ -331,8 +315,12 @@ func Unlike(c *gin.Context) {
 // @Security Bearer
 func GetFavs(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string);
-    path_query := strings.Split(c.Request.URL.RequestURI(), "?")[1];
-    url := fmt.Sprintf("%s/posts/%s/favs?%s", POSTS_URL, uid, path_query);
+    var query models.PostQuery;
+    
+    if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+    }
+    url := fmt.Sprintf("%s/posts/%s/favs?%s", POSTS_URL, uid, query.String());
     res, err := http.Get(url);
 
     if (err != nil) {

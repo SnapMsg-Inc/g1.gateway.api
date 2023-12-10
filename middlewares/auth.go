@@ -42,13 +42,12 @@ func init() {
 */
 func Authentication() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("Ejecutando middleware de autenticación")
+		//if c.Request.Method == "OPTIONS" {
+		//	fmt.Println("Solicitud OPTIONS detectada, pasando al siguiente middleware")
+        //    c.Next()
+        //    return
+        //}
 
-		if c.Request.Method == "OPTIONS" {
-			fmt.Println("Solicitud OPTIONS detectada, pasando al siguiente middleware")
-            c.Next()
-            return
-        }
 		// parse bearer token (`Bearer <id token>`)
 		bearer_token := strings.SplitN(c.GetHeader("Authorization"), " ", 2);
 
