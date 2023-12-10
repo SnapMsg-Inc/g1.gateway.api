@@ -17,6 +17,7 @@ type Post struct {
 	Text      string    `json:"text" gorm:"size:300"`
 	MediaURI  []string  `json:"media_uri"`
 	Likes     uint      `json:"likes"`
+    IsBlocked bool      `json:"is_blocked"`
 }
 
 type PostCreate struct {

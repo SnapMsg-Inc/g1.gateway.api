@@ -136,39 +136,6 @@ func GetUser(c *gin.Context) {
 }
 
 
-// Block any user godoc
-// @Summary Block a given user
-// @Param uid path string true "user id to block"
-// @Schemes
-// @Description
-// @Tags admin methods
-// @Accept json
-// @Produce json
-// @Success 200
-// @Router /admin/users/{uid}/block [post]
-// @Security Bearer
-func BlockUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
-}
-
-
-// Unblock any user godoc
-// @Summary Unblock a blocked user
-// @Param uid path string true "user id to unblock"
-// @Schemes
-// @Description
-// @Tags admin methods
-// @Accept json
-// @Produce json
-// @Success 200
-// @Router /admin/users/{uid}/block [delete]
-// @Security Bearer
-func UnblockUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "not implemented yet"})
-}
-
-
-    
 // Get any posts godoc
 // @Summary Get all posts filtered by query 
 // @Param hashtags query []string false "hashtags" collectionFormat(multi)
@@ -178,7 +145,7 @@ func UnblockUser(c *gin.Context) {
 // @Param page query int true "page" default(0) minimum(0)
 // @Schemes
 // @Description
-// @Tags posts methods
+// @Tags admin methods
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
