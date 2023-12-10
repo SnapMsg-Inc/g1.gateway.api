@@ -18,6 +18,7 @@ RUN swag init
 
 ENV USERS_URL=https://users-ms-marioax.cloud.okteto.net
 ENV POSTS_URL=https://posts-ms-marioax.cloud.okteto.net
+ENV MESSAGES_URL=https://messages-ms-marioax.cloud.okteto.net
 
 EXPOSE 3000
 
