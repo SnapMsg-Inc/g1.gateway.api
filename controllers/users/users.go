@@ -210,7 +210,7 @@ func Follow(c *gin.Context) {
 
 	if res.StatusCode == http.StatusOK {
 
-        followerAlias, err := Uid2nick(uid)
+        followerAlias, err := models.Uid2nick(uid)
     	if err != nil {
 
        	 	c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo obtener el alias del seguidor"})
@@ -361,21 +361,3 @@ func followExist(uid string, followed string) bool {
 	return true
 }
 
-func Uid2nick(uid string) (string, error) {
-    baseUrl := os.Getenv("USERS_URL")
-    url := fmt.Sprintf("%s/users/%s", baseUrl, uid)
-    fmt.Printf("[INFO] %s\n", url)
-
-    res, err := http.Get(url)
-    if err != nil {
-        return "", err
-    }
-    defer res.Body.Close()
-
-    var user models.UserPublic
-    if err := json.NewDecoder(res.Body).Decode(&user); err != nil {
-        return "", err.Error()
-    }
-
-    return user.Alias, nil
-}

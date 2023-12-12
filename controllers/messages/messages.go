@@ -52,7 +52,7 @@ func RegisterToken(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param message_notification body models.MessageNotification true "Message Notification Data"
-// @Success 200 {object} map[string]interface{}
+// @Success 200
 // @Router /messages/notify-message [post]
 // @Security Bearer
 func NotifyMessage(c *gin.Context) {
