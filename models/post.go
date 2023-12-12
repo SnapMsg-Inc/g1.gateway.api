@@ -4,6 +4,7 @@ import (
     "os"
     "fmt"
     "time"
+    "net/url"
     "net/http"
     "encoding/json"
 )
@@ -74,9 +75,9 @@ func (q PostQuery) String() string {
     qstr := ""
 
     /*  optional qparams  */
-    if q.Text != "" { qstr += fmt.Sprintf("text=%s&", q.Text) }
+    if q.Text != "" { qstr += fmt.Sprintf("text=%s&", url.QueryEscape(q.Text)) }
     for _, h := range q.Hashtags { 
-        qstr += fmt.Sprintf("hashtags=%%23%s&", h[1:])
+        qstr += fmt.Sprintf("hashtags=%s&", url.QueryEscape(h));
     }
 
     if q.Nick != "" { 
