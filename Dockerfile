@@ -11,16 +11,24 @@ RUN go get -u google.golang.org/api/option
 RUN go get -u github.com/swaggo/gin-swagger
 RUN go get -u github.com/swaggo/files
 RUN go install github.com/swaggo/swag/cmd/swag@latest
+
+# install datadog statsd
+RUN go get -u github.com/DataDog/datadog-go/v5/statsd
+
 RUN go mod tidy
 
 COPY . .
 
 RUN swag init
 
-ENV USERS_URL=https://users-ms-marioax.cloud.okteto.net
-ENV POSTS_URL=https://posts-ms-marioax.cloud.okteto.net
-ENV MESSAGES_URL=https://messages-ms-marioax.cloud.okteto.net
+ENV USERS_URL=http://users-api:3001
+ENV POSTS_URL=http://posts-api:3001
+ENV MESSAGES_URL=http://messages-api:3001
 
-EXPOSE 3000
+ENV STATSD_HOST=datadog-agent
+ENV STATSD_PORT=8125
+
+ENV SRV_ADDR=:3001
+EXPOSE 3001
 
 CMD ["go", "run", "main.go"] 

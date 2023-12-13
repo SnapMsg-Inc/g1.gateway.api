@@ -1,6 +1,6 @@
 ## Gateway API v1.0.0
 ##  
-PORT=3000
+PORT=3001
 
 .PHONY: build clean fetch-id-token format
 
@@ -11,7 +11,7 @@ build: clean   ## Build the docker image
 	docker build -t api-gateway .
 
 run: build     ## Run the container (and build)
-	docker run --rm --name api-gateway -p ${PORT}:3000 api-gateway:latest 
+	docker run --rm --name api-gateway -p ${PORT}:3001 api-gateway:latest 
 
 run-local:
 	swag init

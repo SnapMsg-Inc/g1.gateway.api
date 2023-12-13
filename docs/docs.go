@@ -15,7 +15,111 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/post/:pid": {
+        "/admin/posts": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Get all posts filtered by query",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "hashtags",
+                        "name": "hashtags",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "author's nickname",
+                        "name": "nick",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text to match",
+                        "name": "text",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Post"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/posts/{pid}/block": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Block a given post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "post id to block",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -31,11 +135,11 @@ const docTemplate = `{
                 "tags": [
                     "admin methods"
                 ],
-                "summary": "Delete a given post",
+                "summary": "Unblock a given post",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "post id to delete",
+                        "description": "post id to unblock",
                         "name": "pid",
                         "in": "path",
                         "required": true
@@ -48,7 +152,141 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/users/:uid": {
+        "/admin/users/{uid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Get specific user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/{uid}/block": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Block a given user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id to block",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Unblock a given user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id to unblock",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/admin/{uid}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin methods"
+                ],
+                "summary": "Check if user is admin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -95,11 +333,11 @@ const docTemplate = `{
                 "tags": [
                     "admin methods"
                 ],
-                "summary": "Delete a given user",
+                "summary": "Remove admin status from existing user",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id to delete",
+                        "description": "user id of the admin",
                         "name": "uid",
                         "in": "path",
                         "required": true
@@ -112,7 +350,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/messages/notify-message": {
+        "/messages": {
             "post": {
                 "security": [
                     {
@@ -143,16 +381,12 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
+                        "description": "OK"
                     }
                 }
             }
         },
-        "/messages/register-token": {
+        "/messages/token": {
             "post": {
                 "security": [
                     {
@@ -211,7 +445,7 @@ const docTemplate = `{
                         "items": {
                             "type": "string"
                         },
-                        "collectionFormat": "csv",
+                        "collectionFormat": "multi",
                         "description": "hashtags",
                         "name": "hashtags",
                         "in": "query"
@@ -615,7 +849,7 @@ const docTemplate = `{
                         "items": {
                             "type": "string"
                         },
-                        "collectionFormat": "csv",
+                        "collectionFormat": "multi",
                         "description": "hashtags",
                         "name": "hashtags",
                         "in": "query"
@@ -928,6 +1162,45 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/stats": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Note: metric value must be float64 if type is {gauge | dist | hist}, int64 if type is count, string otherwise.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stats methods"
+                ],
+                "summary": "Send stat metrics to the cluster's statsd server",
+                "parameters": [
+                    {
+                        "description": "metric data",
+                        "name": "metric_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/metrics.Stat"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
@@ -1402,6 +1675,41 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "metrics.Stat": {
+            "type": "object",
+            "required": [
+                "metric",
+                "type",
+                "value"
+            ],
+            "properties": {
+                "metric": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "default": "count",
+                    "enum": [
+                        "count",
+                        "incr",
+                        "decr",
+                        "gauge",
+                        "set",
+                        "dist",
+                        "hist"
+                    ]
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "models.MessageNotification": {
             "type": "object",
             "properties": {
@@ -1424,6 +1732,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "is_blocked": {
+                    "type": "boolean"
                 },
                 "likes": {
                     "type": "integer"
@@ -1461,6 +1772,13 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "media_uri": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mentioned_user_ids": {
+                    "description": "Agregar esta línea",
                     "type": "array",
                     "items": {
                         "type": "string"

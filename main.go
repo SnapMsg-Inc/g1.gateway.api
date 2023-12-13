@@ -1,8 +1,9 @@
 package main
 
 import (
-    //"net/http"
+    "os"
     "fmt"
+
     docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
     gin "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -12,10 +13,12 @@ import (
     posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
     messages "github.com/SnapMsg-Inc/g1.gateway.api/controllers/messages"
+    stats "github.com/SnapMsg-Inc/g1.gateway.api/controllers/stats"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
-//    cors "github.com/rs/cors/wrapper/gin"
-
 )
+
+var SRV_ADDR = os.Getenv("SRV_ADDR")
+
 
 // @title SnapMsg API
 // @version 1.0
@@ -31,19 +34,8 @@ func main() {
 
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
+    router.Use(middlewares.CORS())
     
-/* cors middleware 
-    router.Use(middlewares.CORS())
-    cors_middleware := cors.New(cors.Options{
-        AllowedOrigins: []string{ "*" },
-        AllowCredentials: true,
-        AllowedMethods: []string{ "POST", "GET", "PATCH", "DELETE" },
-        // Enable Debugging for testing, consider disabling in production
-        Debug: true,
-    })*/
-//    router.Use(cors_middleware)
-    router.Use(middlewares.CORS())
-
     /* private routes */
     private := router.Group("/")
     private.Use(middlewares.Authentication())
@@ -98,13 +90,22 @@ func main() {
         private.POST("/messages/token", messages.RegisterToken)
         private.POST("/messages", messages.NotifyMessage)
 
+        
+        /* stats routes */
+        private.POST("/stats", stats.PushStat)
+        
+
         /* admin routes (must authorize) */
         admin_group := private.Group("/admin")
         admin_group.Use(middlewares.AdminAuthorization())
         {
             admin_group.POST("/:uid", admin.Create)
             admin_group.DELETE("/:uid", admin.Delete)
+
             admin_group.GET("/users/:uid", admin.GetUser)
+            admin_group.POST("/users/:uid/block", admin.BlockUser)
+            admin_group.DELETE("/users/:uid/block", admin.UnblockUser)
+
             admin_group.POST("/posts/:pid/block", admin.BlockPost)
             admin_group.DELETE("/posts/:pid/block", admin.UnblockPost)
             admin_group.GET("/posts", admin.GetPosts)
@@ -112,5 +113,5 @@ func main() {
     }
 
     router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-    router.Run(":3000") // service running in port 3000
+    router.Run(SRV_ADDR)
 }

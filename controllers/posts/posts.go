@@ -7,9 +7,12 @@ import (
     "encoding/json"
     "bytes"
     
+<<<<<<< HEAD
     
+=======
+	gin "github.com/gin-gonic/gin"
+>>>>>>> dd444225151c5879077fb6f1543ccf960fde306a
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
-	"github.com/gin-gonic/gin"
 )
 
 var USERS_URL = os.Getenv("USERS_URL")

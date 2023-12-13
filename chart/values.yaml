@@ -1,0 +1,4 @@
+api:
+  replicaCount: 1
+  image: okteto.dev/gateway-api:okteto
+

@@ -1,17 +1,17 @@
 package messages
 
 import (
-    
+    "os"
+	"fmt"
     "bytes"
 	"net/http"
-	"fmt"
     "encoding/json"
     
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	"github.com/gin-gonic/gin"
 )
 
-var MESSAGES_URL = "https://messages-ms-marioax.cloud.okteto.net"
+var MESSAGES_URL = os.Getenv("MESSAGES_URL");
 
 // RegisterToken godoc
 // @Summary Register a new notification token
@@ -72,7 +72,7 @@ func NotifyMessage(c *gin.Context) {
     res, err := http.Post(url, "application/json", &body)
 
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        c.JSON(res.StatusCode, gin.H{"error": err.Error()})
         return
     }
     // Reenviar la respuesta del servicio Python al cliente
