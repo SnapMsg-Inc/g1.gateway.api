@@ -92,6 +92,7 @@ func main() {
         private.GET("/posts/snapshares/:pid", posts.IsSnapshared)
         private.DELETE("/posts/snapshares/:pid", posts.DeleteSnapshare)
         private.POST("/posts/snapshares/:pid", posts.CreateSnapshare)
+        private.GET("/posts/stats/me", posts.GetMyStats)
 
         /* messaging routes */
         private.POST("/messages/token", messages.RegisterToken)

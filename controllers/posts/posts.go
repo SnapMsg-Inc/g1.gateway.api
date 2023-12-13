@@ -7,6 +7,7 @@ import (
     "encoding/json"
     "bytes"
     
+    
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -592,5 +593,32 @@ func IsSnapshared(c *gin.Context) {
         c.JSON(http.StatusNotFound, gin.H{"error": "not snapshared"})
         return
     }
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+// GetMyStats godoc
+// @Summary Get current user's posts statistics
+// @Description Get statistics for the current user's posts within a date range
+// @Tags stats
+// @Accept  json
+// @Produce  json
+// @Param start query string false "Start Date" format(date)
+// @Param end query string false "End Date" format(date)
+// @Success 200 
+// @Router /posts/stats/me [get]
+// @Security Bearer
+func GetMyStats(c *gin.Context) {
+    uid := c.MustGet("FIREBASE_UID").(string)
+    start := c.Query("start")
+    end := c.Query("end")
+
+    url := fmt.Sprintf("%s/posts/stats/%s?start=%s&end=%s", POSTS_URL, uid, start, end)
+    
+    res, err := http.Get(url)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }

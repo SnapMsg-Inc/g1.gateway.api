@@ -4,7 +4,6 @@ import (
     "os"
     "fmt"
     "time"
-    "net/url"
     "net/http"
     "encoding/json"
 )
@@ -75,9 +74,9 @@ func (q PostQuery) String() string {
     qstr := ""
 
     /*  optional qparams  */
-    if q.Text != "" { qstr += fmt.Sprintf("text=%s&", url.QueryEscape(q.Text)) }
+    if q.Text != "" { qstr += fmt.Sprintf("text=%s&", q.Text) }
     for _, h := range q.Hashtags { 
-        qstr += fmt.Sprintf("hashtags=%s&", url.QueryEscape(h));
+        qstr += fmt.Sprintf("hashtags=%%23%s&", h[1:])
     }
 
     if q.Nick != "" { 
@@ -92,19 +91,8 @@ func (q PostQuery) String() string {
     return qstr;
 }
 
-// func NotifyMention(mentionedUserIDs []string, mentioningUserID, messageContent string) {
-//     notification := MentionNotification{
-//         MentionedUserIDs: mentionedUserIDs,
-//         MentioningUserID: mentioningUserID,
-//         MessageContent:   messageContent,
-//     }
-
-//     var body bytes.Buffer
-//     json.NewEncoder(&body).Encode(notification)
-
-//     url := fmt.Sprintf("%s/notify-mention", MESSAGES_URL)
-//     _, err := http.Post(url, "application/json", &body)
-//     if err != nil {
-//         fmt.Sprintf("Error al enviar notificación de mención: %v", err)
-//     }
-// }
+type PostStatsResponse struct {
+    TotalPosts     int `json:"total_posts"`
+    TotalLikes     int `json:"total_likes"`
+    TotalSnapShares int `json:"total_snapshares"`
+}
