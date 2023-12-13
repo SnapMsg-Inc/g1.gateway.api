@@ -1,8 +1,9 @@
 package main
 
 import (
-    //"net/http"
+    "os"
     "fmt"
+
     docs "github.com/SnapMsg-Inc/g1.gateway.api/docs"
     gin "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -13,9 +14,10 @@ import (
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
     messages "github.com/SnapMsg-Inc/g1.gateway.api/controllers/messages"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
-//    cors "github.com/rs/cors/wrapper/gin"
-
 )
+
+var SRV_PORT = os.Getenv("SRV_PORT")
+
 
 // @title SnapMsg API
 // @version 1.0
@@ -120,5 +122,5 @@ func main() {
     }
 
     router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-    router.Run(":3000") // service running in port 3000
+    router.Run(SRV_PORT)
 }

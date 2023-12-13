@@ -1,0 +1,6 @@
+apiVersion: v2
+name: api-gateway 
+description: A gateway api for the SnapMsg app project
+type: application
+version: 0.1.0
+
