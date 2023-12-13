@@ -21,9 +21,9 @@ COPY . .
 
 RUN swag init
 
-ENV USERS_URL=users-api:3001
-ENV POSTS_URL=posts-api:3001
-ENV MESSAGES_URL=messages-api:3001
+ENV USERS_URL=http://users-api:3001
+ENV POSTS_URL=http://posts-api:3001
+ENV MESSAGES_URL=http://messages-api:3001
 
 ENV STATSD_HOST=datadog-agent
 ENV STATSD_PORT=8125
