@@ -28,7 +28,7 @@ ENV MESSAGES_URL=messages-api:3001
 ENV STATSD_HOST=datadog-agent
 ENV STATSD_PORT=8125
 
-ENV SRV_ADDR=localhost:3001
+ENV SRV_ADDR=:3001
 EXPOSE 3001
 
 CMD ["go", "run", "main.go"] 
