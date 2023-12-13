@@ -136,6 +136,54 @@ func GetUser(c *gin.Context) {
 }
 
 
+// Block any user godoc
+// @Summary Block a given user 
+// @Param uid path string true "user id to block"
+// @Schemes
+// @Description
+// @Tags admin methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /admin/users/{uid}/block [post]
+// @Security Bearer
+func BlockUser(c *gin.Context) {
+	uid := c.Param("uid");
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
+    res, err := patchField(url, "is_blocked", true);
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+    c.JSON(res.StatusCode, gin.H{"message": "user blocked"})
+}
+
+
+// Unblock any user godoc
+// @Summary Unblock a given user 
+// @Param uid path string true "user id to unblock"
+// @Schemes
+// @Description
+// @Tags admin methods
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /admin/users/{uid}/block [delete]
+// @Security Bearer
+func UnblockUser(c *gin.Context) {
+	uid := c.Param("uid");
+	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
+    res, err := patchField(url, "is_blocked", false);
+
+	if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+    c.JSON(res.StatusCode, gin.H{"message": "user unblocked"})
+}
+
+
 // Get any posts godoc
 // @Summary Get all posts filtered by query 
 // @Param hashtags query []string false "hashtags" collectionFormat(multi)
