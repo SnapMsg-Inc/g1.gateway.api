@@ -13,10 +13,11 @@ import (
     posts "github.com/SnapMsg-Inc/g1.gateway.api/controllers/posts"
     users "github.com/SnapMsg-Inc/g1.gateway.api/controllers/users"
     messages "github.com/SnapMsg-Inc/g1.gateway.api/controllers/messages"
+    stats "github.com/SnapMsg-Inc/g1.gateway.api/controllers/stats"
     middlewares "github.com/SnapMsg-Inc/g1.gateway.api/middlewares"
 )
 
-var SRV_PORT = os.Getenv("SRV_PORT")
+var SRV_ADDR= os.Getenv("SRV_ADDR")
 
 
 // @title SnapMsg API
@@ -100,8 +101,8 @@ func main() {
         private.POST("/messages", messages.NotifyMessage)
 
         
-        /* metrics routes */
-        private.POST("/stats", metrics.PushStat)
+        /* stats routes */
+        private.POST("/stats", stats.PushStat)
         
 
         /* admin routes (must authorize) */
@@ -122,5 +123,5 @@ func main() {
     }
 
     router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-    router.Run(SRV_PORT)
+    router.Run(SRV_ADDR)
 }

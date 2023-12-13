@@ -1,4 +1,30 @@
 definitions:
+  metrics.Stat:
+    properties:
+      metric:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        default: count
+        enum:
+        - count
+        - incr
+        - decr
+        - gauge
+        - set
+        - dist
+        - hist
+        type: string
+      value:
+        type: string
+    required:
+    - metric
+    - type
+    - value
+    type: object
   models.MessageNotification:
     properties:
       message_content:
@@ -14,6 +40,8 @@ definitions:
         items:
           type: string
         type: array
+      is_blocked:
+        type: boolean
       likes:
         type: integer
       media_uri:
@@ -38,6 +66,11 @@ definitions:
       is_private:
         type: boolean
       media_uri:
+        items:
+          type: string
+        type: array
+      mentioned_user_ids:
+        description: Agregar esta línea
         items:
           type: string
         type: array
@@ -188,32 +221,12 @@ info:
   title: SnapMsg API
   version: "1.0"
 paths:
-  /admin/post/:pid:
+  /admin/{uid}:
     delete:
       consumes:
       - application/json
       parameters:
-      - description: post id to delete
-        in: path
-        name: pid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: Delete a given post
-      tags:
-      - admin methods
-  /admin/users/:uid:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: user id to delete
+      - description: user id of the admin
         in: path
         name: uid
         required: true
@@ -225,7 +238,28 @@ paths:
           description: OK
       security:
       - Bearer: []
-      summary: Delete a given user
+      summary: Remove admin status from existing user
+      tags:
+      - admin methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if user is admin
       tags:
       - admin methods
     post:
@@ -247,7 +281,156 @@ paths:
       summary: Create an admin user giving existing user
       tags:
       - admin methods
-  /messages/notify-message:
+  /admin/posts:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: multi
+        description: hashtags
+        in: query
+        items:
+          type: string
+        name: hashtags
+        type: array
+      - description: author's nickname
+        in: query
+        name: nick
+        type: string
+      - description: text to match
+        in: query
+        name: text
+        type: string
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all posts filtered by query
+      tags:
+      - admin methods
+  /admin/posts/{pid}/block:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unblock
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unblock a given post
+      tags:
+      - admin methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to block
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Block a given post
+      tags:
+      - admin methods
+  /admin/users/{uid}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - Bearer: []
+      summary: Get specific user
+      tags:
+      - admin methods
+  /admin/users/{uid}/block:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to unblock
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unblock a given user
+      tags:
+      - admin methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to block
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Block a given user
+      tags:
+      - admin methods
+  /messages:
     post:
       consumes:
       - application/json
@@ -264,15 +447,12 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            additionalProperties: true
-            type: object
       security:
       - Bearer: []
       summary: Send a message notification
       tags:
       - messages methods
-  /messages/register-token:
+  /messages/token:
     post:
       consumes:
       - application/json
@@ -299,7 +479,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - collectionFormat: csv
+      - collectionFormat: multi
         description: hashtags
         in: query
         items:
@@ -623,7 +803,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - collectionFormat: csv
+      - collectionFormat: multi
         description: hashtags
         in: query
         items:
@@ -771,6 +951,31 @@ paths:
       summary: Create a snapshare
       tags:
       - posts methods
+  /stats:
+    post:
+      consumes:
+      - application/json
+      description: 'Note: metric value must be float64 if type is {gauge | dist |
+        hist}, int64 if type is count, string otherwise.'
+      parameters:
+      - description: metric data
+        in: body
+        name: metric_data
+        required: true
+        schema:
+          $ref: '#/definitions/metrics.Stat'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      summary: Send stat metrics to the cluster's statsd server
+      tags:
+      - stats methods
   /trendings:
     get:
       consumes:

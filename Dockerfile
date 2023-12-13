@@ -11,6 +11,10 @@ RUN go get -u google.golang.org/api/option
 RUN go get -u github.com/swaggo/gin-swagger
 RUN go get -u github.com/swaggo/files
 RUN go install github.com/swaggo/swag/cmd/swag@latest
+
+# install datadog statsd
+RUN go install github.com/DataDog/datadog-go/v5/statsd
+
 RUN go mod tidy
 
 COPY . .
@@ -24,7 +28,7 @@ ENV MESSAGES_URL=messages-api:3001
 ENV STATSD_HOST=datadog-agent
 ENV STATSD_PORT=8125
 
-ENV SRV_PORT=3001
+ENV SRV_ADDR=localhost:3001
 EXPOSE 3001
 
 CMD ["go", "run", "main.go"] 
