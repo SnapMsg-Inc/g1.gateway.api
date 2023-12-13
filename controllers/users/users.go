@@ -14,6 +14,7 @@ import (
 )
 
 var USERS_URL = os.Getenv("USERS_URL")
+var MESSAGES_URL = os.Getenv("MESSAGES_URL")
 
 // List users godoc
 // @Summary List public users data filtering by query
@@ -206,6 +207,23 @@ func Follow(c *gin.Context) {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
 		return
 	}
+
+	if res.StatusCode == http.StatusOK {
+
+        followerAlias, err := models.Uid2nick(uid)
+    	if err != nil {
+
+       	 	c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo obtener el alias del seguidor"})
+        	return
+    	}
+		notifyURL := fmt.Sprintf("%s/notify-follow/%s/%s", MESSAGES_URL, followerAlias, otheruid)
+		_, notifyErr := http.Post(notifyURL, "application/json", nil)
+		if notifyErr != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo notificar al usuario"})
+			return
+		}
+	}
+	
 	c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
 
@@ -342,3 +360,4 @@ func followExist(uid string, followed string) bool {
 	}
 	return true
 }
+

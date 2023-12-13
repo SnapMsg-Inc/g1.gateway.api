@@ -9,6 +9,13 @@ import (
     "encoding/json"
 )
 
+var MESSAGES_URL = os.Getenv("MESSAGES_URL")
+
+type MentionNotification struct {
+    MentionedUserIDs []string `json:"mentioned_user_ids"`
+    MentioningUserID string   `json:"mentioning_user_id"`
+    MessageContent   string   `json:"message_content"`
+}
 
 type Post struct {
 	ID        string    `json:"pid" gorm:"primary_key"`
@@ -27,6 +34,7 @@ type PostCreate struct {
 	Hashtags []string `json:"hashtags,omitempty"`
 	MediaURI []string `json:"media_uri,omitempty"`
 	Private bool      `json:"is_private"`
+    MentionedUserIDs  []string `json:"mentioned_user_ids,omitempty"` // Agregar esta línea
 }
 
 type PostUpdate struct {
@@ -83,3 +91,20 @@ func (q PostQuery) String() string {
     fmt.Printf("[INFO] qstr: %s\n", qstr);
     return qstr;
 }
+
+// func NotifyMention(mentionedUserIDs []string, mentioningUserID, messageContent string) {
+//     notification := MentionNotification{
+//         MentionedUserIDs: mentionedUserIDs,
+//         MentioningUserID: mentioningUserID,
+//         MessageContent:   messageContent,
+//     }
+
+//     var body bytes.Buffer
+//     json.NewEncoder(&body).Encode(notification)
+
+//     url := fmt.Sprintf("%s/notify-mention", MESSAGES_URL)
+//     _, err := http.Post(url, "application/json", &body)
+//     if err != nil {
+//         fmt.Sprintf("Error al enviar notificación de mención: %v", err)
+//     }
+// }

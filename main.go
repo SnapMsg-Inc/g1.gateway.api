@@ -94,8 +94,8 @@ func main() {
         private.POST("/posts/snapshares/:pid", posts.CreateSnapshare)
 
         /* messaging routes */
-        private.POST("/messages/register-token", messages.RegisterToken)
-        private.POST("/messages/notify-message", messages.NotifyMessage)
+        private.POST("/messages/token", messages.RegisterToken)
+        private.POST("/messages", messages.NotifyMessage)
 
         /* admin routes (must authorize) */
         admin_group := private.Group("/admin")

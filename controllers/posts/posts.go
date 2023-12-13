@@ -3,9 +3,9 @@ package posts
 import (
     "fmt"
     "os"
-    "bytes"
 	"net/http"
     "encoding/json"
+    "bytes"
     
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ import (
 
 var USERS_URL = os.Getenv("USERS_URL")
 var POSTS_URL = os.Getenv("POSTS_URL")
-
+var MESSAGES_URL = os.Getenv("MESSAGES_URL")
 
 // Get posts godoc
 // @Summary Get posts filtering by query
@@ -103,6 +103,19 @@ func Create(c *gin.Context) {
     }
     post.UID = uid;
     // post.Nick = user[0].Nick;
+    
+    followerAlias, err := models.Uid2nick(uid)
+    
+    if err != nil {
+
+       	 	c.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo obtener el alias del seguidor"})
+        	return
+    }
+
+    if len(post.MentionedUserIDs) > 0 {
+
+        models.NotifyMention(post.MentionedUserIDs, followerAlias, post.Text)
+    }
     
     var body bytes.Buffer;
     json.NewEncoder(&body).Encode(post);

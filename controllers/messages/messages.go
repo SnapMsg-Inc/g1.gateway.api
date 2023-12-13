@@ -12,6 +12,7 @@ import (
 )
 
 var MESSAGES_URL = "https://messages-ms-marioax.cloud.okteto.net"
+
 // RegisterToken godoc
 // @Summary Register a new notification token
 // @Param token_data body models.TokenData true "Token Data"
@@ -21,15 +22,15 @@ var MESSAGES_URL = "https://messages-ms-marioax.cloud.okteto.net"
 // @Accept json
 // @Produce json
 // @Success 200 
-// @Router /messages/register-token [post]
+// @Router /messages/token [post]
 // @Security Bearer
 func RegisterToken(c *gin.Context) {
     var tokenData models.TokenData
+
     if err := c.ShouldBindJSON(&tokenData); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-	
 	url := fmt.Sprintf("%s/register-token", MESSAGES_URL);
 
     var body bytes.Buffer
@@ -52,8 +53,8 @@ func RegisterToken(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param message_notification body models.MessageNotification true "Message Notification Data"
-// @Success 200 {object} map[string]interface{}
-// @Router /messages/notify-message [post]
+// @Success 200
+// @Router /messages [post]
 // @Security Bearer
 func NotifyMessage(c *gin.Context) {
     var notification models.MessageNotification
