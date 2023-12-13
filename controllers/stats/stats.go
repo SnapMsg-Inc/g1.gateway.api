@@ -52,6 +52,9 @@ type Stat struct {
 // @Router /stats [post]
 // @Security Bearer
 func PushStat(c *gin.Context) {
+    if (statsd == nil) {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : "cannot connect to statsd service"});
+    }
     var stat Stat;
     err := c.ShouldBind(&stat);
 
