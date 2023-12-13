@@ -13,7 +13,7 @@ RUN go get -u github.com/swaggo/files
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 
 # install datadog statsd
-RUN go install github.com/DataDog/datadog-go/v5/statsd
+RUN go get -u github.com/DataDog/datadog-go/v5/statsd
 
 RUN go mod tidy
 
