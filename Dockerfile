@@ -21,6 +21,9 @@ ENV USERS_URL=https://users-ms-marioax.cloud.okteto.net
 ENV POSTS_URL=https://posts-ms-marioax.cloud.okteto.net
 ENV MESSAGES_URL=https://messages-ms-marioax.cloud.okteto.net
 
+ENV STATSD_HOST=datadog-agent
+ENV STATSD_PORT=8125
+
 EXPOSE 3000
 
 CMD ["go", "run", "main.go"] 

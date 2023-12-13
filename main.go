@@ -97,6 +97,11 @@ func main() {
         private.POST("/messages/token", messages.RegisterToken)
         private.POST("/messages", messages.NotifyMessage)
 
+        
+        /* metrics routes */
+        private.POST("/stats", metrics.PushStat)
+        
+
         /* admin routes (must authorize) */
         admin_group := private.Group("/admin")
         admin_group.Use(middlewares.AdminAuthorization())
