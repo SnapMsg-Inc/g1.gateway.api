@@ -225,6 +225,7 @@ func GetPosts(c *gin.Context) {
 // @Produce  json
 // @Param start query string false "Start Date" format(date)
 // @Param end query string false "End Date" format(date)
+// @Param uid path string true "user id to get the posts stats"
 // @Success 200 
 // @Router /admin/posts/{uid}/stats [get]
 // @Security Bearer
