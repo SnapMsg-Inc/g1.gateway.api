@@ -260,7 +260,7 @@ func GetFeed(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/recommended [get]
+// @Router /posts/me/recommended [get]
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
