@@ -268,31 +268,45 @@ func GetRecommended(c *gin.Context) {
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+        return;
     }
-    url := fmt.Sprintf("%s/users/%s/recommended?%s", USERS_URL, uid);
+
+    /*  get list of recommended users  */
+    url := fmt.Sprintf("%s/users/%s/recommended", USERS_URL, uid);
     res, err := http.Get(url);
-    
+
     if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err.Error});
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
     }
     var recomm []models.UserPublic;
-    err = json.NewDecoder(res.Body).Decode(&recomm)
-    
+    err = json.NewDecoder(res.Body).Decode(&recomm);
+
     if (err != nil) {
-        c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse json"});
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : "cannot parse json" });
         return;
     }
+    fmt.Sprintf("[INFO] recomm user: %+q\n", recomm);
+
+    if (len(recomm) == 0) {
+        c.JSON(http.StatusOK, gin.H{"data" : []string{}});
+        return;
+    }
+
+    /*  arrange query to get recommended users posts  */
     qstr := query.String();
 
     for _, user := range recomm {
-        qstr += "uid=" + user.ID + "&";
-    } 
+       qstr += "uid=" + user.ID + "&";
+    }
+
+    /*  get recommended posts  */
+    fmt.Sprintf("[INFO] QUERY: %s\n", qstr);
     url = fmt.Sprintf("%s/posts?%s", POSTS_URL, qstr);
     res, err = http.Get(url);
-    
+
     if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err.Error});
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
         return;
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
