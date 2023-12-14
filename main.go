@@ -34,11 +34,11 @@ func main() {
 
     docs.SwaggerInfo.BasePath = "/"
     router := gin.Default() // router with Default middleware
+    router.Use(middlewares.CORS())
     
     /* private routes */
     private := router.Group("/")
     private.Use(middlewares.Authentication())
-    private.Use(middlewares.CORS())
     {
         /* users routes */
         private.POST("/users", users.Create)
