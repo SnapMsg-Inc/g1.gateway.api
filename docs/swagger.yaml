@@ -369,6 +369,37 @@ paths:
       summary: Block a given post
       tags:
       - admin methods
+  /admin/posts/{uid}/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get post statistics a given user's within a date range
+      parameters:
+      - description: Start Date
+        format: date
+        in: query
+        name: start
+        type: string
+      - description: End Date
+        format: date
+        in: query
+        name: end
+        type: string
+      - description: user id to get the posts stats
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get current user's posts statistics
+      tags:
+      - admin
   /admin/users/{uid}:
     get:
       consumes:
@@ -843,7 +874,63 @@ paths:
       summary: Get posts filtering by query
       tags:
       - posts methods
-  /posts/me/recommended:
+  /posts/me/snapshares:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the snapshares associated with the current authenticated
+        user.
+      parameters:
+      - default: 100
+        description: Limit of snapshares to retrieve
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        type: integer
+      - default: 0
+        description: Page number for pagination
+        in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get snapshares of current user
+      tags:
+      - posts methods
+  /posts/me/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get statistics for the current user's posts within a date range
+      parameters:
+      - description: Start Date
+        format: date
+        in: query
+        name: start
+        type: string
+      - description: End Date
+        format: date
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get current user's posts statistics
+      tags:
+      - stats methods
+  /posts/recommended:
     get:
       consumes:
       - application/json
@@ -875,36 +962,6 @@ paths:
       security:
       - Bearer: []
       summary: Get recommended posts for a user
-      tags:
-      - posts methods
-  /posts/me/snapshares:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves the snapshares associated with the current authenticated
-        user.
-      parameters:
-      - default: 100
-        description: Limit of snapshares to retrieve
-        in: query
-        maximum: 100
-        minimum: 0
-        name: limit
-        type: integer
-      - default: 0
-        description: Page number for pagination
-        in: query
-        minimum: 0
-        name: page
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: Get snapshares of current user
       tags:
       - posts methods
   /posts/snapshares/{pid}:
@@ -951,32 +1008,6 @@ paths:
       summary: Create a snapshare
       tags:
       - posts methods
-  /posts/stats/me:
-    get:
-      consumes:
-      - application/json
-      description: Get statistics for the current user's posts within a date range
-      parameters:
-      - description: Start Date
-        format: date
-        in: query
-        name: start
-        type: string
-      - description: End Date
-        format: date
-        in: query
-        name: end
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      security:
-      - Bearer: []
-      summary: Get current user's posts statistics
-      tags:
-      - stats
   /stats:
     post:
       consumes:

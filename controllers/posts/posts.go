@@ -3,11 +3,11 @@ package posts
 import (
     "fmt"
     "os"
-    "net/http"
+	"net/http"
     "encoding/json"
     "bytes"
     
-    gin "github.com/gin-gonic/gin"
+	gin "github.com/gin-gonic/gin"
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 )
 
@@ -34,9 +34,7 @@ func Get(c *gin.Context) {
     var query models.PostQuery;
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
-        fmt.Println("Error binding query parameters:", bind_err)
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
-        return;
     }
     url := fmt.Sprintf("%s/posts?private=false&public=true&blocked=false&%s", POSTS_URL, query.String());
     fmt.Printf("[INFO] %s\n", url);
@@ -70,7 +68,6 @@ func GetMe(c *gin.Context) {
 
     if bind_err != nil {
         c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
-        return;
     }
     url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true&blocked=true", POSTS_URL, uid, query.String());
     fmt.Printf("[url] %s\n", url);
@@ -233,7 +230,6 @@ func GetFeed(c *gin.Context) {
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
-        return;
     }
     qstr := query.String();
 
@@ -254,7 +250,6 @@ func GetFeed(c *gin.Context) {
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
-
 // Get recommended godoc
 // @Summary Get recommended posts for a user
 // @Param limit query int true "limit" default(100) maximum(100) minimum(0)
@@ -265,7 +260,7 @@ func GetFeed(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/me/recommended [get]
+// @Router /posts/recommended [get]
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
@@ -273,42 +268,9 @@ func GetRecommended(c *gin.Context) {
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
-        return;
     }
-
-    /*  get list of recommended users  */
-    url := fmt.Sprintf("%s/users/%s/recommended", USERS_URL, uid);
+    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, query.String());
     res, err := http.Get(url);
-
-    if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
-        return;
-    }
-    var recomm []models.UserPublic;
-    err = json.NewDecoder(res.Body).Decode(&recomm);
-
-    if (err != nil) {
-        c.JSON(http.StatusBadRequest, gin.H{ "error" : "cannot parse json" });
-        return;
-    }
-    fmt.Sprintf("[INFO] recomm user: %+q\n", recomm);
-
-    if (len(recomm) == 0) {
-        c.JSON(http.StatusOK, gin.H{"data" : []string{}});
-        return;
-    }
-
-    /*  arrange query to get recommended users posts  */
-    qstr := query.String();
-
-    for _, user := range recomm {
-       qstr += "uid=" + user.ID + "&";
-    }
-
-    /*  get recommended posts  */
-    fmt.Sprintf("[INFO] QUERY: %s\n", qstr);
-    url = fmt.Sprintf("%s/posts?%s", POSTS_URL, qstr);
-    res, err = http.Get(url);
 
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
@@ -316,7 +278,6 @@ func GetRecommended(c *gin.Context) {
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
-
 
 // Like post godoc
 // @Summary Add a like to a post
@@ -637,20 +598,20 @@ func IsSnapshared(c *gin.Context) {
 // GetMyStats godoc
 // @Summary Get current user's posts statistics
 // @Description Get statistics for the current user's posts within a date range
-// @Tags stats
+// @Tags stats methods
 // @Accept  json
 // @Produce  json
 // @Param start query string false "Start Date" format(date)
 // @Param end query string false "End Date" format(date)
 // @Success 200 
-// @Router /posts/stats/me [get]
+// @Router /posts/me/stats [get]
 // @Security Bearer
 func GetMyStats(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
     start := c.Query("start")
     end := c.Query("end")
 
-    url := fmt.Sprintf("%s/posts/stats/%s?start=%s&end=%s", POSTS_URL, uid, start, end)
+    url := fmt.Sprintf("%s/posts/%s/stats?start=%s&end=%s", POSTS_URL, uid, start, end)
     
     res, err := http.Get(url)
     if err != nil {
@@ -660,4 +621,3 @@ func GetMyStats(c *gin.Context) {
     
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
 }
-

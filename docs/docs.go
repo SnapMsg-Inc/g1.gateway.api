@@ -152,6 +152,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/posts/{uid}/stats": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get post statistics a given user's within a date range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get current user's posts statistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Start Date",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "End Date",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "user id to get the posts stats",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/admin/users/{uid}": {
             "get": {
                 "security": [
@@ -893,7 +941,92 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/me/recommended": {
+        "/posts/me/snapshares": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves the snapshares associated with the current authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get snapshares of current user",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit of snapshares to retrieve",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/posts/me/stats": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics for the current user's posts within a date range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stats methods"
+                ],
+                "summary": "Get current user's posts statistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Start Date",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "End Date",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/posts/recommended": {
             "get": {
                 "security": [
                     {
@@ -940,50 +1073,6 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Post"
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/posts/me/snapshares": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieves the snapshares associated with the current authenticated user.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts methods"
-                ],
-                "summary": "Get snapshares of current user",
-                "parameters": [
-                    {
-                        "maximum": 100,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 100,
-                        "description": "Limit of snapshares to retrieve",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Page number for pagination",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -1048,47 +1137,6 @@ const docTemplate = `{
                         "name": "pid",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/posts/stats/me": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get statistics for the current user's posts within a date range",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stats"
-                ],
-                "summary": "Get current user's posts statistics",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "date",
-                        "description": "Start Date",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "date",
-                        "description": "End Date",
-                        "name": "end",
-                        "in": "query"
                     }
                 ],
                 "responses": {
