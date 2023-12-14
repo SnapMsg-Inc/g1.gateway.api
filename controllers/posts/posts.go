@@ -269,11 +269,30 @@ func GetRecommended(c *gin.Context) {
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
     }
-    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, query.String());
+    url := fmt.Sprintf("%s/users/%s/recommended?%s", USERS_URL, uid);
     res, err := http.Get(url);
-
+    
     if (err != nil) {
-        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error});
+        return;
+    }
+    var recomm []models.UserPublic;
+    err = json.NewDecoder(res.Body).Decode(&recomm)
+    
+    if (err != nil) {
+        c.JSON(http.StatusInternalServerError, gin.H{ "error" : "cannot parse json"});
+        return;
+    }
+    qstr := query.String();
+
+    for _, user := range recomm {
+        qstr += "uid=" + user.ID + "&";
+    } 
+    url = fmt.Sprintf("%s/posts?%s", POSTS_URL, qstr);
+    res, err = http.Get(url);
+    
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error});
         return;
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
