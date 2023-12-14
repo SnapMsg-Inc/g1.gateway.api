@@ -109,6 +109,7 @@ func main() {
             admin_group.POST("/posts/:pid/block", admin.BlockPost)
             admin_group.DELETE("/posts/:pid/block", admin.UnblockPost)
             admin_group.GET("/posts", admin.GetPosts)
+            admin_group.GET("/posts/:uid/stats", admin.GetPostsStats)
         }
     }
 

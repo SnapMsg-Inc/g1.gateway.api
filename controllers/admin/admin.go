@@ -217,6 +217,34 @@ func GetPosts(c *gin.Context) {
 }
 
 
+// Get post stats of any user godoc
+// @Summary Get current user's posts statistics
+// @Description Get post statistics a given user's within a date range
+// @Tags admin 
+// @Accept  json
+// @Produce  json
+// @Param start query string false "Start Date" format(date)
+// @Param end query string false "End Date" format(date)
+// @Success 200 
+// @Router /admin/posts/{uid}/stats [get]
+// @Security Bearer
+func GetPostsStats(c *gin.Context) {
+    uid := c.Param("uid")
+    start := c.Query("start")
+    end := c.Query("end")
+
+    url := fmt.Sprintf("%s/posts/%s/stats?start=%s&end=%s", POSTS_URL, uid, start, end)
+    
+    res, err := http.Get(url)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    
+    c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil)
+}
+
+
 // Block any post godoc
 // @Summary Block a given post
 // @Param pid path string true "post id to block"
