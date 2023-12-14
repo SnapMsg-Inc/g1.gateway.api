@@ -44,11 +44,11 @@ type PostUpdate struct {
 }
 
 type PostQuery struct {
-	Nick string `form:"nick,omitempty" json:"nick,omitempty"`
-	Text string   `form:"text,omitempty" json:"text,omitempty" gorm:"size:300"`
-	Hashtags []string `form:"hashtags,omitempty" json:"hashtags,omitempty"`
-    Limit uint `form:"limit,default=100" json:"limit,default=100" binding:"required,min=0,max=100"` 
-    Page uint `form:"page,default=100" json:"page,default=0" binding:"required,min=0"` 
+	Nick string `form:"nick"`
+	Text string   `form:"text" gorm:"size:300"`
+	Hashtags []string `form:"hashtags"`
+    Limit uint `form:"limit,default=100" binding:"min=0,max=100"` 
+    Page uint `form:"page,default=0" binding:"min=0"` 
 }
 
 func nick2uid(nick string) []string {
@@ -86,7 +86,7 @@ func (q PostQuery) String() string {
     }
 
     /*  required qparams  */
-    qstr += fmt.Sprintf("limit=%d&page=%d", q.Limit, q.Page)
+    qstr += fmt.Sprintf("limit=%d&page=%d&", q.Limit, q.Page)
     fmt.Printf("[INFO] qstr: %s\n", qstr);
     return qstr;
 }

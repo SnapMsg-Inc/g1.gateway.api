@@ -7,11 +7,7 @@ import (
     "encoding/json"
     "bytes"
     
-<<<<<<< HEAD
-    
-=======
 	gin "github.com/gin-gonic/gin"
->>>>>>> dd444225151c5879077fb6f1543ccf960fde306a
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 )
 
@@ -38,7 +34,9 @@ func Get(c *gin.Context) {
     var query models.PostQuery;
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
+        fmt.Println("Error binding query parameters:", bind_err)
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+        return;
     }
     url := fmt.Sprintf("%s/posts?private=false&public=true&blocked=false&%s", POSTS_URL, query.String());
     fmt.Printf("[INFO] %s\n", url);
@@ -72,6 +70,7 @@ func GetMe(c *gin.Context) {
 
     if bind_err != nil {
         c.JSON(http.StatusBadRequest, gin.H{ "error" : bind_err.Error });
+        return;
     }
     url := fmt.Sprintf("%s/posts?uid=%s&%s&private=true&public=true&blocked=true", POSTS_URL, uid, query.String());
     fmt.Printf("[url] %s\n", url);
@@ -234,6 +233,7 @@ func GetFeed(c *gin.Context) {
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+        return;
     }
     qstr := query.String();
 
@@ -254,6 +254,7 @@ func GetFeed(c *gin.Context) {
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
 
+
 // Get recommended godoc
 // @Summary Get recommended posts for a user
 // @Param limit query int true "limit" default(100) maximum(100) minimum(0)
@@ -264,7 +265,7 @@ func GetFeed(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 array models.Post
-// @Router /posts/recommended [get]
+// @Router /posts/me/recommended [get]
 // @Security Bearer
 func GetRecommended(c *gin.Context) {
     uid := c.MustGet("FIREBASE_UID").(string)
@@ -272,9 +273,42 @@ func GetRecommended(c *gin.Context) {
     
     if bind_err := c.ShouldBindQuery(&query); bind_err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{ "error" : bind_err.Error });
+        return;
     }
-    url := fmt.Sprintf("%s/posts/%s/recommended?%s", POSTS_URL, uid, query.String());
+
+    /*  get list of recommended users  */
+    url := fmt.Sprintf("%s/users/%s/recommended", USERS_URL, uid);
     res, err := http.Get(url);
+
+    if (err != nil) {
+        c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
+        return;
+    }
+    var recomm []models.UserPublic;
+    err = json.NewDecoder(res.Body).Decode(&recomm);
+
+    if (err != nil) {
+        c.JSON(http.StatusBadRequest, gin.H{ "error" : "cannot parse json" });
+        return;
+    }
+    fmt.Sprintf("[INFO] recomm user: %+q\n", recomm);
+
+    if (len(recomm) == 0) {
+        c.JSON(http.StatusOK, gin.H{"data" : []string{}});
+        return;
+    }
+
+    /*  arrange query to get recommended users posts  */
+    qstr := query.String();
+
+    for _, user := range recomm {
+       qstr += "uid=" + user.ID + "&";
+    }
+
+    /*  get recommended posts  */
+    fmt.Sprintf("[INFO] QUERY: %s\n", qstr);
+    url = fmt.Sprintf("%s/posts?%s", POSTS_URL, qstr);
+    res, err = http.Get(url);
 
     if (err != nil) {
         c.JSON(res.StatusCode, gin.H{ "error" : err.Error });
@@ -282,6 +316,7 @@ func GetRecommended(c *gin.Context) {
     }
     c.DataFromReader(res.StatusCode, res.ContentLength, "application/json", res.Body, nil);
 }
+
 
 // Like post godoc
 // @Summary Add a like to a post

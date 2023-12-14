@@ -893,51 +893,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/posts/me/snapshares": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Retrieves the snapshares associated with the current authenticated user.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "posts methods"
-                ],
-                "summary": "Get snapshares of current user",
-                "parameters": [
-                    {
-                        "maximum": 100,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 100,
-                        "description": "Limit of snapshares to retrieve",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Page number for pagination",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/posts/recommended": {
+        "/posts/me/recommended": {
             "get": {
                 "security": [
                     {
@@ -984,6 +940,50 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Post"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/posts/me/snapshares": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves the snapshares associated with the current authenticated user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts methods"
+                ],
+                "summary": "Get snapshares of current user",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Limit of snapshares to retrieve",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -1048,6 +1048,47 @@ const docTemplate = `{
                         "name": "pid",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/posts/stats/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get statistics for the current user's posts within a date range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stats"
+                ],
+                "summary": "Get current user's posts statistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Start Date",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "End Date",
+                        "name": "end",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1523,27 +1564,6 @@ const docTemplate = `{
                     "users methods"
                 ],
                 "summary": "Recommend users for the user making the request",
-                "parameters": [
-                    {
-                        "maximum": 100,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 100,
-                        "description": "max results",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "page number",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

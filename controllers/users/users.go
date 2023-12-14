@@ -70,8 +70,6 @@ func GetMe(c *gin.Context) {
 // @Summary Recommend users for the user making the request
 // @Schemes
 // @Description
-// @Param limit query int true "max results" default(100) maximum(100) minimum(0)
-// @Param page query int true "page number" default(0) minimum(0)
 // @Tags users methods
 // @x-order "2"
 // @Accept json

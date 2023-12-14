@@ -68,7 +68,7 @@ func main() {
         }
 
         private.GET("/posts/feed", posts.GetFeed)
-        private.GET("/posts/recommended", posts.GetRecommended)
+        private.GET("/posts/me/recommended", posts.GetRecommended)
         private.GET("/trendings", posts.GetTrendingTopics)
 
         private.GET("/posts/favs", posts.GetFavs)
