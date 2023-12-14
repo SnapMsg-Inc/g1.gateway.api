@@ -14,6 +14,7 @@ import (
 )
 
 var USERS_URL = os.Getenv("USERS_URL")
+var POSTS_URL = os.Getenv("POSTS_URL")
 var MESSAGES_URL = os.Getenv("MESSAGES_URL")
 
 // List users godoc
