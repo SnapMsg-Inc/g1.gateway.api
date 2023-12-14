@@ -172,10 +172,20 @@ func Update(c *gin.Context) {
 // @Security Bearer
 func Delete(c *gin.Context) {
 	uid := c.MustGet("FIREBASE_UID").(string)
-	url := fmt.Sprintf("%s/users/%s", USERS_URL, uid)
-	req, _ := http.NewRequest("DELETE", url, nil)
+    
 	client := &http.Client{}
+	url := fmt.Sprintf("%s/posts/%s", POSTS_URL, uid)
+    req, _ := http.NewRequest("DELETE", url, nil)
 	res, err := client.Do(req)
+
+    if err != nil {
+		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+    
+	url = fmt.Sprintf("%s/users/%s", USERS_URL, uid)
+	req, _ = http.NewRequest("DELETE", url, nil)
+	res, err = client.Do(req)
 
 	if err != nil {
 		c.JSON(res.StatusCode, gin.H{"error": err.Error()})
