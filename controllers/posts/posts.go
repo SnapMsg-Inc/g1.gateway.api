@@ -3,11 +3,11 @@ package posts
 import (
     "fmt"
     "os"
-	"net/http"
+    "net/http"
     "encoding/json"
     "bytes"
     
-	gin "github.com/gin-gonic/gin"
+    gin "github.com/gin-gonic/gin"
     models "github.com/SnapMsg-Inc/g1.gateway.api/models"
 )
 
