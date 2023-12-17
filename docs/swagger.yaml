@@ -1,0 +1,1322 @@
+definitions:
+  metrics.Stat:
+    properties:
+      metric:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        default: count
+        enum:
+        - count
+        - incr
+        - decr
+        - gauge
+        - set
+        - dist
+        - hist
+        type: string
+      value:
+        type: string
+    required:
+    - metric
+    - type
+    - value
+    type: object
+  models.MessageNotification:
+    properties:
+      message_content:
+        type: string
+      receiver_id:
+        type: string
+      sender_alias:
+        type: string
+    type: object
+  models.Post:
+    properties:
+      hashtags:
+        items:
+          type: string
+        type: array
+      is_blocked:
+        type: boolean
+      likes:
+        type: integer
+      media_uri:
+        items:
+          type: string
+        type: array
+      pid:
+        type: string
+      text:
+        type: string
+      timestamp:
+        type: string
+      uid:
+        type: string
+    type: object
+  models.PostCreate:
+    properties:
+      hashtags:
+        items:
+          type: string
+        type: array
+      is_private:
+        type: boolean
+      media_uri:
+        items:
+          type: string
+        type: array
+      mentioned_user_ids:
+        description: Agregar esta línea
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
+  models.PostUpdate:
+    properties:
+      hashtags:
+        items:
+          type: string
+        type: array
+      is_private:
+        type: boolean
+      media_uri:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
+  models.TokenData:
+    properties:
+      token:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.User:
+    properties:
+      alias:
+        type: string
+      birthdate:
+        example: YYYY-MM-DD
+        type: string
+      email:
+        type: string
+      followers:
+        type: integer
+      follows:
+        type: integer
+      fullname:
+        type: string
+      interests:
+        items:
+          type: string
+        type: array
+      is_admin:
+        type: boolean
+      nick:
+        type: string
+      ocupation:
+        type: string
+      pic:
+        type: string
+      uid:
+        type: string
+      zone:
+        additionalProperties:
+          type: number
+        example:
+          latitude: 0
+          longitude: 0
+        type: object
+    type: object
+  models.UserCreate:
+    properties:
+      alias:
+        type: string
+      birthdate:
+        example: YYYY-MM-DD
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      interests:
+        items:
+          type: string
+        type: array
+      nick:
+        type: string
+      ocupation:
+        type: string
+      pic:
+        type: string
+      zone:
+        additionalProperties:
+          type: number
+        example:
+          latitude: 0
+          longitude: 0
+        type: object
+    required:
+    - alias
+    - birthdate
+    - email
+    - fullname
+    - interests
+    - nick
+    - ocupation
+    - pic
+    - zone
+    type: object
+  models.UserPublic:
+    properties:
+      alias:
+        type: string
+      followers:
+        type: integer
+      follows:
+        type: integer
+      interests:
+        items:
+          type: string
+        type: array
+      nick:
+        type: string
+      pic:
+        type: string
+      uid:
+        type: string
+    type: object
+  models.UserUpdate:
+    properties:
+      alias:
+        type: string
+      interests:
+        items:
+          type: string
+        type: array
+      nick:
+        type: string
+      ocupation:
+        type: string
+      pic:
+        type: string
+      zone:
+        additionalProperties:
+          type: number
+        example:
+          latitude: 0
+          longitude: 0
+        type: object
+    type: object
+info:
+  contact: {}
+  title: SnapMsg API
+  version: "1.0"
+paths:
+  /admin/{uid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id of the admin
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Remove admin status from existing user
+      tags:
+      - admin methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if user is admin
+      tags:
+      - admin methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to become admin
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Create an admin user giving existing user
+      tags:
+      - admin methods
+  /admin/posts:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: multi
+        description: hashtags
+        in: query
+        items:
+          type: string
+        name: hashtags
+        type: array
+      - description: author's nickname
+        in: query
+        name: nick
+        type: string
+      - description: text to match
+        in: query
+        name: text
+        type: string
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get all posts filtered by query
+      tags:
+      - admin methods
+  /admin/posts/{pid}/block:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unblock
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unblock a given post
+      tags:
+      - admin methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to block
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Block a given post
+      tags:
+      - admin methods
+  /admin/posts/{uid}/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get post statistics a given user's within a date range
+      parameters:
+      - description: Start Date
+        format: date
+        in: query
+        name: start
+        type: string
+      - description: End Date
+        format: date
+        in: query
+        name: end
+        type: string
+      - description: user id to get the posts stats
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get current user's posts statistics
+      tags:
+      - admin
+  /admin/users/{uid}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - Bearer: []
+      summary: Get specific user
+      tags:
+      - admin methods
+  /admin/users/{uid}/block:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to unblock
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unblock a given user
+      tags:
+      - admin methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to block
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Block a given user
+      tags:
+      - admin methods
+  /messages:
+    post:
+      consumes:
+      - application/json
+      description: send a message notification
+      parameters:
+      - description: Message Notification Data
+        in: body
+        name: message_notification
+        required: true
+        schema:
+          $ref: '#/definitions/models.MessageNotification'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Send a message notification
+      tags:
+      - messages methods
+  /messages/token:
+    post:
+      consumes:
+      - application/json
+      description: register a new notification token
+      parameters:
+      - description: Token Data
+        in: body
+        name: token_data
+        required: true
+        schema:
+          $ref: '#/definitions/models.TokenData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Register a new notification token
+      tags:
+      - messages methods
+  /posts:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: multi
+        description: hashtags
+        in: query
+        items:
+          type: string
+        name: hashtags
+        type: array
+      - description: author's nickname
+        in: query
+        name: nick
+        type: string
+      - description: text to match
+        in: query
+        name: text
+        type: string
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get posts filtering by query
+      tags:
+      - posts methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data for the new post
+        in: body
+        name: PostCreate
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Create a new post
+      tags:
+      - posts methods
+  /posts/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to delete
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Delete post owned by current user
+      tags:
+      - posts methods
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to update
+        in: path
+        name: pid
+        required: true
+        type: string
+      - description: data for update the post
+        in: body
+        name: PostUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+      security:
+      - Bearer: []
+      summary: Update some fields of a post
+      tags:
+      - posts methods
+  /posts/{pid}/snapshares:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: snapshare id to delete
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Delete snapshare owned by current user
+      tags:
+      - posts methods
+  /posts/favs:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: List user fav posts
+      tags:
+      - posts methods
+  /posts/favs/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unfav
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Remove a post from user favs
+      tags:
+      - posts methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: pid to check fav
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if current user favs a given post
+      tags:
+      - posts methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to mark as fav
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Add a post to user favs
+      tags:
+      - posts methods
+  /posts/feed:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get feed of the user making the request
+      tags:
+      - posts methods
+  /posts/likes/{pid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to unlike
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unlike a post
+      tags:
+      - posts methods
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: pid to check like
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if current user liked a given post
+      tags:
+      - posts methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post id to like
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Add a like to a post
+      tags:
+      - posts methods
+  /posts/me:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: multi
+        description: hashtags
+        in: query
+        items:
+          type: string
+        name: hashtags
+        type: array
+      - description: text to match
+        in: query
+        name: text
+        type: string
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get posts filtering by query
+      tags:
+      - posts methods
+  /posts/me/snapshares:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the snapshares associated with the current authenticated
+        user.
+      parameters:
+      - default: 100
+        description: Limit of snapshares to retrieve
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        type: integer
+      - default: 0
+        description: Page number for pagination
+        in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get snapshares of current user
+      tags:
+      - posts methods
+  /posts/me/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get statistics for the current user's posts within a date range
+      parameters:
+      - description: Start Date
+        format: date
+        in: query
+        name: start
+        type: string
+      - description: End Date
+        format: date
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Get current user's posts statistics
+      tags:
+      - stats methods
+  /posts/recommended:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 100
+        description: limit
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get recommended posts for a user
+      tags:
+      - posts methods
+  /posts/snapshares/{pid}:
+    get:
+      consumes:
+      - application/json
+      description: Checks if the current authenticated user has snapshared a specific
+        post.
+      parameters:
+      - description: Post ID
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if a post is snapshared by current user
+      tags:
+      - posts methods
+    post:
+      consumes:
+      - application/json
+      description: Creates a new snapshare for a given post by the current user.
+      parameters:
+      - description: Post ID
+        in: path
+        name: pid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Create a snapshare
+      tags:
+      - posts methods
+  /stats:
+    post:
+      consumes:
+      - application/json
+      description: 'Note: metric value must be float64 if type is {gauge | dist |
+        hist}, int64 if type is count, string otherwise.'
+      parameters:
+      - description: metric data
+        in: body
+        name: metric_data
+        required: true
+        schema:
+          $ref: '#/definitions/metrics.Stat'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      summary: Send stat metrics to the cluster's statsd server
+      tags:
+      - stats methods
+  /trendings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of trending topics.
+      parameters:
+      - default: 10
+        description: Limit of topics to retrieve
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: Page number for pagination
+        in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get Trending Topics
+      tags:
+      - posts methods
+  /users:
+    get:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: user id
+        in: query
+        name: uid
+        type: string
+      - description: user email
+        in: query
+        name: email
+        type: string
+      - description: user nickname
+        in: query
+        name: nick
+        type: string
+      - default: 100
+        description: max results
+        in: query
+        maximum: 100
+        minimum: 0
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: page number
+        in: query
+        minimum: 0
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserPublic'
+            type: array
+      security:
+      - Bearer: []
+      summary: List public users data filtering by query
+      tags:
+      - users methods
+      x-order: "1"
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User creation data
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Create a user
+      tags:
+      - users methods
+      x-order: "0"
+  /users/{uid}/followers:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to list followers
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: List followers of given user
+      tags:
+      - users methods
+  /users/{uid}/follows:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to list follows
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: List follows of a given user
+      tags:
+      - users methods
+  /users/{uid}/follows/{otheruid}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id who follows
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: the user id beeing followed
+        in: path
+        name: otheruid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+      security:
+      - Bearer: []
+      summary: Check if uid follows otheruid
+      tags:
+      - users methods
+  /users/me:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Delete the user making the request
+      tags:
+      - users methods
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - Bearer: []
+      summary: Get private data of current user
+      tags:
+      - users methods
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: data for update the user
+        in: body
+        name: UserUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Update current user data
+      tags:
+      - users methods
+  /users/me/follows/{uid}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to unfollow
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Unfollow a given user
+      tags:
+      - users methods
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id to follow
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Follow a given user
+      tags:
+      - users methods
+  /users/me/recommended:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserPublic'
+            type: array
+      security:
+      - Bearer: []
+      summary: Recommend users for the user making the request
+      tags:
+      - users methods
+      x-order: "2"
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and Firebase JWT.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,3 +1,21 @@
+## Usage (with docker)
+Build:
+```bash
+  make build
+```
+Run:
+```bash
+  make run [PORT=<PORT>]
+```
+Remove image and container:
+```bash
+  make clean
+```
+List all options:
+```bash
+  make help
+```
+
 ## REST specification
 
 All methods require an `Authorization: Bearer <JWT>` header to authenticate with [firebase](https://firebase.google.com/docs/auth/web/start).
@@ -35,7 +53,7 @@ This idtoken contains the user info embedded.
 ### admin methods 
 | Method | HTTP request | q-params | b-params | description | response |
 |--------|--------------|:--------:|:-------:|-------------|:--------:|
-| **create admin** | PUT **`/admin/users/{id}`**  | **-** | **-** | Designate an existing user as admin | **-** |
-| **delete** | DELETE **`/admin/users/{id}`** | **-** | **-** | Delete a given user account | **-** |
+| **create admin** | PATCH **`/admin/users/{id}`**  | **-** | **-** | Designate an existing user as admin | **-** |
+| **delete** | DELETE **`/admin/users/{id}`** | **-** | **-** | Delete any user account | **-** |
 | **delete** | DELETE **`/admin/posts/{id}`** | **-** | **-** | Deletes any post | **-** |
 

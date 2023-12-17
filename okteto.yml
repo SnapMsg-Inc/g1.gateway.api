@@ -1,0 +1,22 @@
+name: g1.gateway.api
+
+build:
+  gateway-api:
+    context: .
+    
+deploy:
+  - helm upgrade --install gateway-api chart
+    --set api.image=${OKTETO_BUILD_GATEWAY_API_IMAGE}
+
+dev:
+  gateway-api:
+    forward:
+      - 3001:3001
+      - 3001:users-api:3001
+      - 3001:posts-api:3001
+      - 3001:messages-api:3001
+      - 8126:datadog-agent:8126
+      - 8125:datadog-agent:8125
+    sync:
+      - .:/usr/snapmsg-gateway
+
